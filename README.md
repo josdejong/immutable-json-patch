@@ -10,6 +10,11 @@ Features:
 
 See http://jsonpatch.com/ for a clear description of the JSONPatch standard itself.
 
+## Playground
+
+Try it out: https://josdejong.github.io/simple-json-repair/
+
+
 ## Install
 
 ```
