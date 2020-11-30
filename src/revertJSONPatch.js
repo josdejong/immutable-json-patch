@@ -4,7 +4,7 @@ import { immutableJSONPatch, isArrayItem } from './immutableJSONPatch.js'
 
 /**
  * Create the inverse of a set of json patch operations
- * @param {JSON} json
+ * @param {JSONData} json
  * @param {JSONPatchDocument} operations    Array with JSON patch actions
  * @return {JSONPatchDocument} Returns the operations to revert the changes
  */
@@ -32,8 +32,8 @@ const REVERT_OPS = {
 }
 
 /**
- * @param {JSON} json
- * @param {{ path: Path }} operation
+ * @param {JSONData} json
+ * @param {{ path: JSONPath }} operation
  * @return {JSONPatchOperation[]}
  */
 function revertReplace (json, { path }) {
@@ -45,8 +45,8 @@ function revertReplace (json, { path }) {
 }
 
 /**
- * @param {JSON} json
- * @param {{ path: Path }} operation
+ * @param {JSONData} json
+ * @param {{ path: JSONPath }} operation
  * @return {JSONPatchOperation[]}
  */
 function revertRemove (json, { path }) {
@@ -58,8 +58,8 @@ function revertRemove (json, { path }) {
 }
 
 /**
- * @param {JSON} json
- * @param {{ path: Path, value: JSON }} operation
+ * @param {JSONData} json
+ * @param {{ path: JSONPath, value: JSONData }} operation
  * @return {JSONPatchOperation[]}
  */
 function revertAdd (json, { path, value }) {
@@ -74,8 +74,8 @@ function revertAdd (json, { path, value }) {
 }
 
 /**
- * @param {JSON} json
- * @param {{ path: Path, value: JSON }} operation
+ * @param {JSONData} json
+ * @param {{ path: JSONPath, value: JSONData }} operation
  * @return {JSONPatchOperation[]}
  */
 function revertCopy (json, { path, value }) {
@@ -83,8 +83,8 @@ function revertCopy (json, { path, value }) {
 }
 
 /**
- * @param {JSON} json
- * @param {{ path: Path, from: Path }} operation
+ * @param {JSONData} json
+ * @param {{ path: JSONPath, from: JSONPath }} operation
  * @return {JSONPatchOperation[]}
  */
 function revertMove (json, { path, from }) {

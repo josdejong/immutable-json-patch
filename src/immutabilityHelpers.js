@@ -65,7 +65,7 @@ export function applyProp (object, key, value) {
  * helper function to get a nested property in an object or array
  *
  * @param {Object | Array} object
- * @param {Path} path
+ * @param {JSONPath} path
  * @return {* | undefined} Returns the field when found, or undefined when the
  *                         path doesn't exist
  */
@@ -91,7 +91,7 @@ export function getIn (object, path) {
  * without mutating the object itself.
  *
  * @param {Object | Array} object
- * @param {Path} path
+ * @param {JSONPath} path
  * @param {*} value
  * @param {boolean} [createPath=false]
  *                    If true, `path` will be created when (partly) missing in
@@ -130,7 +130,7 @@ export function setIn (object, path, value, createPath = false) {
  * without mutating the object itself.
  *
  * @param {Object | Array} object
- * @param {Path} path
+ * @param {JSONPath} path
  * @param {function} callback
  * @return {Object | Array} Returns a new, updated object or array
  */
@@ -153,7 +153,7 @@ export function updateIn (object, path, callback) {
  * without mutating the object itself.
  *
  * @param {Object | Array} object
- * @param {Path} path
+ * @param {JSONPath} path
  * @return {Object | Array} Returns a new, updated object or array
  */
 export function deleteIn (object, path) {
@@ -195,7 +195,7 @@ export function deleteIn (object, path) {
  *     insertAt({arr: [1,2,3]}, ['arr', '2'], 'inserted')  // [1,2,'inserted',3]
  *
  * @param {Object | Array} object
- * @param {Path} path
+ * @param {JSONPath} path
  * @param {*} value
  * @return {Array}
  */
@@ -218,10 +218,10 @@ export function insertAt (object, path, value) {
 /**
  * Transform a JSON object, traverse over the whole object,
  * and allow replacing Objects/Arrays/values.
- * @param {JSON} json
- * @param {function (json: JSON, path: Path) : JSON} callback
- * @param {Path} [path]
- * @return {JSON}
+ * @param {JSONData} json
+ * @param {function (json: JSONData, path: JSONPath) : JSONData} callback
+ * @param {JSONPath} [path]
+ * @return {JSONData}
  */
 export function transform (json, callback, path = []) {
   const updated1 = callback(json, path)
@@ -231,7 +231,7 @@ export function transform (json, callback, path = []) {
 
     for (let i = 0; i < updated1.length; i++) {
       const before = updated1[i]
-      // we stringify the index here, so the Path only contains strings and can be safely
+      // we stringify the index here, so the path only contains strings and can be safely
       // stringified/parsed to JSONPointer without loosing information.
       // We do not want to rely on path keys being numeric/string.
       const after = transform(before, callback, path.concat(i + ''))
@@ -268,8 +268,8 @@ export function transform (json, callback, path = []) {
 
 /**
  * Test whether a path exists in a JSON object
- * @param {JSON} json
- * @param {Path} path
+ * @param {JSONData} json
+ * @param {JSONPath} path
  * @return {boolean} Returns true if the path exists, else returns false
  * @private
  */

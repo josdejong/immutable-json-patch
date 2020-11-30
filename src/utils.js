@@ -1,7 +1,7 @@
 /**
  * Test deep equality of two JSON values, objects, or arrays
- * @param {JSON} a
- * @param {JSON} b
+ * @param {JSONData} a
+ * @param {JSONData} b
  * @returns {boolean}
  */
 // TODO: write unit tests

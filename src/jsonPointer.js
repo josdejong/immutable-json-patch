@@ -1,7 +1,7 @@
 /**
  * Parse a JSON Pointer
  * @param {string} pointer
- * @return {Path}
+ * @return {JSONPath}
  */
 export function parseJSONPointer (pointer) {
   const path = pointer.split('/')
@@ -12,7 +12,7 @@ export function parseJSONPointer (pointer) {
 
 /**
  * Compile a JSON Pointer
- * @param {Path} path
+ * @param {JSONPath} path
  * @return {string}
  */
 export function compileJSONPointer (path) {

@@ -6,10 +6,10 @@ import { initial, isEqual, last } from './utils.js'
  * Apply a patch to a JSON object
  * The original JSON object will not be changed,
  * instead, the patch is applied in an immutable way
- * @param {JSON} json
+ * @param {JSONData} json
  * @param {JSONPatchDocument} operations    Array with JSON patch actions
  * @param {JSONPatchOptions} [options]
- * @return {JSON} Returns the updated json
+ * @return {JSONData} Returns the updated json
  */
 export function immutableJSONPatch (json, operations, options) {
   let updatedJson = json
@@ -64,9 +64,9 @@ const PATCH_OPS = {
 
 /**
  * Replace an existing item
- * @param {JSON} json
- * @param {{ path: Path, value: JSON }} operation
- * @return {JSON}
+ * @param {JSONData} json
+ * @param {{ path: JSONPath, value: JSONData }} operation
+ * @return {JSONData}
  */
 export function replace (json, { path, value }) {
   return setIn(json, path, value)
@@ -74,18 +74,18 @@ export function replace (json, { path, value }) {
 
 /**
  * Remove an item or property
- * @param {JSON} json
- * @param {{ path: Path }} operation
- * @return {JSON}
+ * @param {JSONData} json
+ * @param {{ path: JSONPath }} operation
+ * @return {JSONData}
  */
 export function remove (json, { path }) {
   return deleteIn(json, path)
 }
 
 /**
- * @param {JSON} json
- * @param {{ path: Path, value: JSON }} operation
- * @return {JSON}
+ * @param {JSONData} json
+ * @param {{ path: JSONPath, value: JSONData }} operation
+ * @return {JSONData}
  */
 export function add (json, { path, value }) {
   if (isArrayItem(json, path)) {
@@ -97,9 +97,9 @@ export function add (json, { path, value }) {
 
 /**
  * Copy a value
- * @param {JSON} json
- * @param {{ path: Path, from: Path }} operation
- * @return {JSON}
+ * @param {JSONData} json
+ * @param {{ path: JSONPath, from: JSONPath }} operation
+ * @return {JSONData}
  */
 export function copy (json, { path, from }) {
   const value = getIn(json, from)
@@ -115,9 +115,9 @@ export function copy (json, { path, from }) {
 
 /**
  * Move a value
- * @param {JSON} json
- * @param {{ path: Path, from: Path }} operation
- * @return {JSON}
+ * @param {JSONData} json
+ * @param {{ path: JSONPath, from: JSONPath }} operation
+ * @return {JSONData}
  */
 export function move (json, { path, from }) {
   const value = getIn(json, from)
@@ -131,8 +131,8 @@ export function move (json, { path, from }) {
 /**
  * Test whether the data contains the provided value at the specified path.
  * Throws an error when the test fails
- * @param {JSON} json
- * @param {{ path: Path, value: JSON }} operation
+ * @param {JSONData} json
+ * @param {{ path: JSONPath, value: JSONData }} operation
  */
 export function test (json, { path, value }) {
   if (value === undefined) {
@@ -150,8 +150,8 @@ export function test (json, { path, value }) {
 }
 
 /**
- * @param {JSON} json
- * @param {Path} path
+ * @param {JSONData} json
+ * @param {JSONPath} path
  * @returns {boolean}
  */
 // TODO: write unit tests
@@ -163,9 +163,9 @@ export function isArrayItem (json, path) {
 
 /**
  * Resolve the path index of an array, resolves indexes '-'
- * @param {JSON} json
- * @param {Path} path
- * @returns {Path} Returns the resolved path
+ * @param {JSONData} json
+ * @param {JSONPath} path
+ * @returns {JSONPath} Returns the resolved path
  */
 export function resolvePathIndex (json, path) {
   if (last(path) !== '-') {
@@ -203,13 +203,9 @@ export function validateJSONPatchOperation (operation) {
 }
 
 /**
+ * @param {JSONData} json
  * @param {JSONPatchOperation} operation
- * @return {{
- *   op: string,
- *   path: Path,
- *   from: Path?,
- *   value: *?
- * }}
+ * @return {PreprocessedJSONPatchOperation}
  */
 // TODO: write unit tests
 export function preprocessJSONPatchOperation (json, operation) {
