@@ -1,0 +1,59 @@
+{
+  "name": "immutable-json-patch",
+  "version": "1.0.0",
+  "description": "Immutable JSON patch with support for reverting operations",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/josdejong/immutable-json-patch.git"
+  },
+  "type": "module",
+  "main": "lib/cjs/index.js",
+  "module": "lib/esm/index.js",
+  "browser": "lib/umd/immutableJSONPatch.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "json",
+    "patch",
+    "immutable",
+    "revert",
+    "inverse"
+  ],
+  "scripts": {
+    "test": "mocha",
+    "test:lib": "mocha test-lib/*.test.*",
+    "build": "npm run clean && npm run build:ts && npm run build:esm && npm run build:cjs && npm run build:umd && npm run build:umd:min",
+    "clean": "del-cli lib",
+    "build:ts": "cpy src/index.d.ts lib",
+    "build:esm": "babel src --out-dir lib/esm --source-maps --config-file ./babel.config.json",
+    "build:cjs": "babel src --out-dir lib/cjs --source-maps --config-file ./babel-cjs.config.json && cpy tools/cjs lib/cjs",
+    "build:umd": "rollup lib/esm/index.js --format umd --name 'immutableJSONPatch' --sourcemap --output.file lib/umd/immutableJSONPatch.js && cpy tools/cjs/package.json lib/umd",
+    "build:umd:min": "uglifyjs --compress --mangle --source-map --comments --output lib/umd/immutableJSONPatch.min.js -- lib/umd/immutableJSONPatch.js",
+    "link": "npm run build",
+    "lint": "eslint src/**/*.js",
+    "build-and-test": "npm run lint && npm run build && npm run test:lib",
+    "prepublishOnly": "npm run build-and-test"
+  },
+  "files": [
+    "README.md",
+    "LICENSE.md",
+    "lib"
+  ],
+  "author": "Jos de Jong",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "7.12.1",
+    "@babel/core": "7.12.3",
+    "@babel/preset-env": "7.12.1",
+    "cpy-cli": "3.1.1",
+    "del-cli": "3.0.1",
+    "eslint": "7.12.1",
+    "eslint-config-standard": "16.0.1",
+    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-promise": "4.2.1",
+    "mocha": "8.2.0",
+    "rollup": "2.33.1",
+    "uglify-js": "3.11.5"
+  },
+  "dependencies": {}
+}

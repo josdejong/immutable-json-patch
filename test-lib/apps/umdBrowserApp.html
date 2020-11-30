@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Immutable JSON patch</title>
+  <script src="../../lib/umd/immutableJSONPatch.js"></script>
+</head>
+<body>
+  <script>
+    const json = {}
+    const operations = [
+      { op: 'add', path: '/hello', value: 'world' }
+    ]
+
+    const updatedJson = immutableJSONPatch.immutableJSONPatch(json, operations)
+    document.write('updated json:' + JSON.stringify(updatedJson) + '<br>')
+
+    const reverseOperations = immutableJSONPatch.revertJSONPatch(json, operations)
+    const revertedJson = immutableJSONPatch.immutableJSONPatch(updatedJson, reverseOperations)
+    document.write('reverted json:' + JSON.stringify(revertedJson) + '<br>')
+  </script>
+</body>
+</html>
