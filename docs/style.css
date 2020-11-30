@@ -1,0 +1,110 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: ubuntu, arial, sans-serif;
+  overflow: hidden;
+}
+
+html, body, button {
+  font-family: ubuntu, arial, sans-serif;
+}
+
+body, textarea {
+  color: #4d4d4d;
+}
+
+a {
+  color: dodgerblue;
+}
+a:hover {
+  color: #187ad7;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+}
+
+h1 {
+  font-size: 150%;
+  color: dodgerblue;
+  margin: 0;
+  padding: 20px 0;
+}
+
+.app {
+  max-width: 1000px;
+  flex: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.info {
+  padding: 0 0 40px 0;
+}
+
+.playground {
+  flex: 1;
+  display: flex;
+}
+
+.action {
+
+}
+
+.column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.separator {
+  width: 20px;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+textarea {
+  width: 100%;
+  flex: 1;
+  border: 1px solid #bfbfbf;
+  border-radius: 3px;
+  padding: 5px;
+  box-sizing: border-box;
+  font-family: monospace;
+  max-height: 300px;
+}
+
+.actions {
+  margin-top: 20px;
+  height: 50px;
+}
+
+button {
+  padding: 10px;
+  display: inline;
+  background: #4393de;
+  border: none;
+  color: white;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #63a2dd;
+}
+
+textarea[readonly] {
+  background: #f5f5f5;
+}
+
+.error {
+  color: #f65252;
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>immutable-json-patch playground</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="Immutable JSON patch with support for reverting operations">
+  <meta name="keywords" content="json, patch, immutable, revert, inverse">
+</head>
+<body>
+  <div class="app">
+    <h1>immutable-json-patch</h1>
+    <div class="info">
+      Immutable JSON patch with support for reverting operations:
+      <a href="https://github.com/josdejong/immutable-json-patch">
+        https://github.com/josdejong/immutable-json-patch
+      </a>
+    </div>
+    <div class="playground">
+      <div class="column">
+        <label for="json-text">Input JSON</label>
+        <textarea id="json-text" autocomplete="off" autocapitalize="off" spellcheck="false">{
+  "baz": "qux",
+  "foo": "bar"
+}</textarea>
+        <label for="operations-text">Input patch operations</label>
+        <textarea id="operations-text" autocomplete="off" autocapitalize="off" spellcheck="false">[
+  { "op": "replace", "path": "/baz", "value": "boo" },
+  { "op": "add", "path": "/hello", "value": ["world"] },
+  { "op": "remove", "path": "/foo" }
+]</textarea>
+        <div class="actions">
+          <button id="apply-patch">Apply JSON patch</button>
+        </div>
+      </div>
+      <div class="separator"></div>
+      <div class="column">
+        <label for="updated-json-text">Output JSON</label>
+        <textarea id="updated-json-text" readonly>loading...</textarea>
+        <label for="reverse-operations-text">Reverse patch operations</label>
+        <textarea id="reverse-operations-text" readonly>loading...</textarea>
+        <div class="actions">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { immutableJSONPatch, revertJSONPatch } from 'https://unpkg.com/immutable-json-patch@1.0.0/lib/esm/index.js'
+
+    function applyPatch () {
+      try {
+        const json = JSON.parse(jsonText.value)
+        const operations = JSON.parse(operationsText.value)
+
+        const updatedJson = immutableJSONPatch(json, operations)
+        const reverseOperations = revertJSONPatch(json, operations)
+
+        updatedJsonText.value = JSON.stringify(updatedJson, null, 2)
+        reverseOperationsText.value = JSON.stringify(reverseOperations, null, 2)
+        updatedJsonText.classList.remove('error')
+      } catch (err) {
+        updatedJsonText.value = err.message
+        reverseOperationsText.value = ''
+        updatedJsonText.classList.add('error')
+      }
+    }
+
+    const jsonText = document.getElementById('json-text')
+    const operationsText = document.getElementById('operations-text')
+    const updatedJsonText = document.getElementById('updated-json-text')
+    const reverseOperationsText = document.getElementById('reverse-operations-text')
+    const applyPatchButton = document.getElementById('apply-patch')
+
+    applyPatchButton.onclick = applyPatch
+    applyPatch()
+  </script>
+</body>
+</html>
