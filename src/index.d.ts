@@ -28,3 +28,6 @@ export type JSONPatchOptions = {
   after?: (json: JSONData, operation: PreprocessedJSONPatchOperation, previousJson: JSONData)
     => JSONData | undefined
 }
+
+export type immutableJSONPatch = (json: JSONData, operations: JSONPatchDocument, options?: JSONPatchOptions) => JSONData
+export type revertJSONPatch = (json: JSONData, operations: JSONPatchDocument) => JSONData

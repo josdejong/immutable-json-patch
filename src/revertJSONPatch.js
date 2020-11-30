@@ -34,7 +34,7 @@ const REVERT_OPS = {
 /**
  * @param {JSONData} json
  * @param {{ path: JSONPath }} operation
- * @return {JSONPatchOperation[]}
+ * @return {JSONPatchDocument}
  */
 function revertReplace (json, { path }) {
   return [{
@@ -47,7 +47,7 @@ function revertReplace (json, { path }) {
 /**
  * @param {JSONData} json
  * @param {{ path: JSONPath }} operation
- * @return {JSONPatchOperation[]}
+ * @return {JSONPatchDocument}
  */
 function revertRemove (json, { path }) {
   return [{
@@ -60,7 +60,7 @@ function revertRemove (json, { path }) {
 /**
  * @param {JSONData} json
  * @param {{ path: JSONPath, value: JSONData }} operation
- * @return {JSONPatchOperation[]}
+ * @return {JSONPatchDocument}
  */
 function revertAdd (json, { path, value }) {
   if (isArrayItem(json, path) || !existsIn(json, path)) {
@@ -76,7 +76,7 @@ function revertAdd (json, { path, value }) {
 /**
  * @param {JSONData} json
  * @param {{ path: JSONPath, value: JSONData }} operation
- * @return {JSONPatchOperation[]}
+ * @return {JSONPatchDocument}
  */
 function revertCopy (json, { path, value }) {
   return revertAdd(json, { path, value })
@@ -85,7 +85,7 @@ function revertCopy (json, { path, value }) {
 /**
  * @param {JSONData} json
  * @param {{ path: JSONPath, from: JSONPath }} operation
- * @return {JSONPatchOperation[]}
+ * @return {JSONPatchDocument}
  */
 function revertMove (json, { path, from }) {
   let revert = [
