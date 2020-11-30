@@ -8,11 +8,9 @@ Features:
 - Create inverse of the JSON patch operations to fully revert applied operations.
 - Hook into the operations right before and after they are executed.
 
+Try it out on a playground: https://josdejong.github.io/immutable-json-patch/
+
 See http://jsonpatch.com/ for a clear description of the JSONPatch standard itself.
-
-## Playground
-
-Try it out: https://josdejong.github.io/simple-json-repair/
 
 
 ## Install
