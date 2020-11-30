@@ -114,7 +114,7 @@ The function returns an updated JSON document where the JSON patch operations ar
 #### revertJSONPatch(json, operations) => reverseOperations
 
 ```ts
-export declare function revertJSONPatch (json: JSONData, operations: JSONPatchDocument) : JSONPatchDocument
+declare function revertJSONPatch (json: JSONData, operations: JSONPatchDocument) : JSONPatchDocument
 ```
 
 Where:
