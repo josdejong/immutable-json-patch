@@ -79,7 +79,50 @@ console.log('reverted json', revertedJson)
 
 ### API
 
-TODO: describe API
+#### immutableJSONPatch(json, operations [, options]) => updatedJson
+
+```ts
+declare function immutableJSONPatch (json: JSONData, operations: JSONPatchDocument, options?: JSONPatchOptions) : JSONData
+```
+
+Where:
+
+-   `json: JSONData` is a JSON document
+-   `operations: JSONPatchDocument` is an array with JSONPatch operations
+-   `options: JSONPatchOptions` is an optional object allowing passing hooks `before` and `after`. With those hooks it is possible to alter the JSON document and/or applied operation before and after this is applied. This allows for example to instantiate classes or special, additional data structures when applying a JSON patch operation. Or you can keep certain data stats up to date. For example, it is possible to have an array with `Customer` class instances, and instantiate a `new Customer` when an `add` operation is performed. And in this library itself, the `before` callback is used to create inverse operations whilst applying the actual operations on the document.
+ 
+    The callbacks look like:
+
+    ```ts
+    const options = {
+      before: (json: JSONData, operation: PreprocessedJSONPatchOperation) => {
+        console.log('before operation', { json, operation })
+        // return { json?: JSONData, operation?: PreprocessedJSONPatchOperation } | undefined
+      },
+    
+      after: (json: JSONData, operation: PreprocessedJSONPatchOperation, previousJson: JSONData) => {
+        console.log('before operation', { json, operation, previousJson })
+        // return JSONData | undefined
+      }
+    }
+    ```
+    
+    When the `before` or `after` callback returns an object with altered `json`, this will be used to apply the operation. When and altered `operation` is returned from `before` in an object, this operation will be applied instead of the original operation. 
+    
+The function returns an updated JSON document where the JSON patch operations are applied. The original JSON document is not changed.
+
+#### revertJSONPatch(json, operations) => reverseOperations
+
+```ts
+export declare function revertJSONPatch (json: JSONData, operations: JSONPatchDocument) : JSONPatchDocument
+```
+
+Where:
+
+-   `json: JSONData` is a JSON document
+-   `operations: JSONPatchDocument` is an array with JSONPatch operations
+
+The function returns a list with the reverse JSON Patch operations. These operations can be applied to the updated JSON document (the output of `immutableJSONPatch`) to restore the original JSON document.
 
 
 ### Develop

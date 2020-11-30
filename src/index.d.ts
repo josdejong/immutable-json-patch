@@ -29,5 +29,5 @@ export type JSONPatchOptions = {
     => JSONData | undefined
 }
 
-export type immutableJSONPatch = (json: JSONData, operations: JSONPatchDocument, options?: JSONPatchOptions) => JSONData
-export type revertJSONPatch = (json: JSONData, operations: JSONPatchDocument) => JSONData
+export declare function immutableJSONPatch (json: JSONData, operations: JSONPatchDocument, options?: JSONPatchOptions) : JSONData
+export declare function revertJSONPatch (json: JSONData, operations: JSONPatchDocument) : JSONPatchDocument
