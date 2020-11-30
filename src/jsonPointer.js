@@ -1,6 +1,5 @@
 /**
  * Parse a JSON Pointer
- * WARNING: this is not a complete implementation
  * @param {string} pointer
  * @return {Path}
  */
@@ -13,7 +12,6 @@ export function parseJSONPointer (pointer) {
 
 /**
  * Compile a JSON Pointer
- * WARNING: this is not a complete implementation
  * @param {Path} path
  * @return {string}
  */

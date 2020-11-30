@@ -54,41 +54,12 @@ export function immutableJSONPatch (json, operations, options) {
   return updatedJson
 }
 
-/**
- * Create the inverse of a set of json patch operations
- * @param {JSON} json
- * @param {JSONPatchDocument} operations    Array with JSON patch actions
- * @return {JSONPatchDocument} Returns the operations to revert the changes
- */
-export function revertJSONPatch (json, operations) {
-  let revertOperations = []
-
-  immutableJSONPatch(json, operations, {
-    before: (json, operation) => {
-      const revert = REVERT_OPS[operation.op]
-      if (revert) {
-        revertOperations = revert(json, operation).concat(revertOperations)
-      }
-    }
-  })
-
-  return revertOperations
-}
-
 const PATCH_OPS = {
   add,
   remove,
   replace,
   copy,
   move
-}
-
-const REVERT_OPS = {
-  add: revertAdd,
-  remove: revertRemove,
-  replace: revertReplace,
-  copy: revertCopy,
-  move: revertMove
 }
 
 /**
@@ -180,83 +151,11 @@ export function test (json, { path, value }) {
 
 /**
  * @param {JSON} json
- * @param {{ path: Path }} operation
- * @return {JSONPatchOperation[]}
- */
-function revertReplace (json, { path }) {
-  return [{
-    op: 'replace',
-    path: compileJSONPointer(path),
-    value: getIn(json, path)
-  }]
-}
-
-/**
- * @param {JSON} json
- * @param {{ path: Path }} operation
- * @return {JSONPatchOperation[]}
- */
-function revertRemove (json, { path }) {
-  return [{
-    op: 'add',
-    path: compileJSONPointer(path),
-    value: getIn(json, path)
-  }]
-}
-
-/**
- * @param {JSON} json
- * @param {{ path: Path, value: JSON }} operation
- * @return {JSONPatchOperation[]}
- */
-function revertAdd (json, { path, value }) {
-  if (isArrayItem(json, path) || !existsIn(json, path)) {
-    return [{
-      op: 'remove',
-      path: compileJSONPointer(path)
-    }]
-  } else {
-    return revertReplace(json, { path, value })
-  }
-}
-
-/**
- * @param {JSON} json
- * @param {{ path: Path, value: JSON }} operation
- * @return {JSONPatchOperation[]}
- */
-function revertCopy (json, { path, value }) {
-  return revertAdd(json, { path, value })
-}
-
-/**
- * @param {JSON} json
- * @param {{ path: Path, from: Path }} operation
- * @return {JSONPatchOperation[]}
- */
-function revertMove (json, { path, from }) {
-  let revert = [
-    {
-      op: 'move',
-      from: compileJSONPointer(path),
-      path: compileJSONPointer(from)
-    }
-  ]
-
-  if (!isArrayItem(json, path) && existsIn(json, path)) {
-    // the move replaces an existing value in an object
-    revert = revert.concat(revertRemove(json, { path }))
-  }
-
-  return revert
-}
-
-/**
- * @param {JSON} json
  * @param {Path} path
  * @returns {boolean}
  */
-function isArrayItem (json, path) {
+// TODO: write unit tests
+export function isArrayItem (json, path) {
   const parent = getIn(json, initial(path))
 
   return Array.isArray(parent)
@@ -303,6 +202,15 @@ export function validateJSONPatchOperation (operation) {
   }
 }
 
+/**
+ * @param {JSONPatchOperation} operation
+ * @return {{
+ *   op: string,
+ *   path: Path,
+ *   from: Path?,
+ *   value: *?
+ * }}
+ */
 // TODO: write unit tests
 export function preprocessJSONPatchOperation (json, operation) {
   return {

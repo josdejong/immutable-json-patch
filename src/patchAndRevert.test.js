@@ -1,5 +1,6 @@
 import assert from 'assert'
-import { immutableJSONPatch, revertJSONPatch } from './immutableJSONPatch.js'
+import { immutableJSONPatch } from './immutableJSONPatch.js'
+import { revertJSONPatch } from './revertJSONPatch.js'
 
 describe('immutableJSONPatch', () => {
   it('test strictEqual, notStrictEqual, deepStrictEqual', () => {
