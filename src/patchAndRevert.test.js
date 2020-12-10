@@ -253,6 +253,29 @@ describe('immutableJSONPatch', () => {
     assert.deepStrictEqual(revert2, operations)
   })
 
+  it('jsonpatch move up in array', () => {
+    const json = ['A', 'B', 'C', 'D', 'E']
+
+    const operations = [
+      { op: 'move', from: '/3', path: '/1' }
+    ]
+
+    const updatedJson = immutableJSONPatch(json, operations)
+    const revert = revertJSONPatch(json, operations)
+
+    assert.deepStrictEqual(updatedJson, ['A', 'D', 'B', 'C', 'E'])
+    assert.deepStrictEqual(revert, [
+      { op: 'move', from: '/1', path: '/3' }
+    ])
+
+    // test revert
+    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
+    const revert2 = revertJSONPatch(updatedJson, revert)
+
+    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(revert2, operations)
+  })
+
   it('jsonpatch move and replace', () => {
     const json = { a: 2, b: 3 }
 
