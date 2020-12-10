@@ -5,7 +5,7 @@
  */
 export function parseJSONPointer (pointer) {
   const path = pointer.split('/')
-  path.shift() // remove the first empty entrypa
+  path.shift() // remove the first empty entry
 
   return path.map(p => p.replace(/~1/g, '/').replace(/~0/g, '~'))
 }
