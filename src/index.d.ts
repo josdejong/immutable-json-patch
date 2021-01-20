@@ -31,3 +31,13 @@ export type JSONPatchOptions = {
 
 export declare function immutableJSONPatch (json: JSONData, operations: JSONPatchDocument, options?: JSONPatchOptions) : JSONData
 export declare function revertJSONPatch (json: JSONData, operations: JSONPatchDocument) : JSONPatchDocument
+
+// utils
+export declare function parseJSONPointer (pointer: string) : JSONPath
+export declare function compileJSONPointer (path: JSONPath) : string
+export declare function getIn(json: JSONData, path: JSONPath) : JSONData
+export declare function setIn(json: JSONData, path: JSONPath, value: JSONData, createPath?: boolean) : JSONData
+export declare function updateIn(json: JSONData, path: JSONPath, callback: (json: JSONData) => JSONData) : JSONData
+export declare function deleteIn(json: JSONData, path: JSONPath) : JSONData
+export declare function existsIn(json: JSONData, path: JSONPath) : boolean
+export declare function insertAt(json: JSONData, path: JSONPath, value: JSONData) : JSONData

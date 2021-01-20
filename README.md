@@ -127,6 +127,21 @@ Where:
 
 The function returns a list with the reverse JSON Patch operations. These operations can be applied to the updated JSON document (the output of `immutableJSONPatch`) to restore the original JSON document.
 
+#### util functions
+
+The library exposes a set of internally used functions to work with JSON pointers and to do immutable operations on JSON data:
+
+```ts
+declare function parseJSONPointer (pointer: string) : JSONPath
+declare function compileJSONPointer (path: JSONPath) : string
+
+declare function getIn(json: JSONData, path: JSONPath) : JSONData
+declare function setIn(json: JSONData, path: JSONPath, value: JSONData, createPath?: boolean) : JSONData
+declare function updateIn(json: JSONData, path: JSONPath, callback: (json: JSONData) => JSONData)
+declare function deleteIn(json: JSONData, path: JSONPath) : JSONData
+declare function existsIn(json: JSONData, path: JSONPath) : boolean
+declare function insertAt(json: JSONData, path: JSONPath, value: JSONData) : JSONData
+```
 
 ### Develop
 
