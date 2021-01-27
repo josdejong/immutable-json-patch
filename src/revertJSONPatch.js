@@ -1,6 +1,7 @@
 import { existsIn, getIn } from './immutabilityHelpers.js'
-import { compileJSONPointer } from './jsonPointer.js'
 import { immutableJSONPatch, isArrayItem } from './immutableJSONPatch.js'
+import { compileJSONPointer } from './jsonPointer.js'
+import { startsWith } from './utils.js'
 
 /**
  * Create the inverse of a set of json patch operations
@@ -88,6 +89,17 @@ function revertCopy (json, { path, value }) {
  * @return {JSONPatchDocument}
  */
 function revertMove (json, { path, from }) {
+  if (path.length < from.length && startsWith(from, path)) {
+    // replacing the parent with the child
+    return [
+      {
+        op: 'replace',
+        path: compileJSONPointer(path),
+        value: json
+      }
+    ]
+  }
+
   let revert = [
     {
       op: 'move',

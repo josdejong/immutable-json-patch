@@ -1,5 +1,11 @@
-import { setIn, getIn, deleteIn, insertAt, existsIn } from './immutabilityHelpers.js'
-import { parseJSONPointer, compileJSONPointer } from './jsonPointer.js'
+import {
+  deleteIn,
+  existsIn,
+  getIn,
+  insertAt,
+  setIn
+} from './immutabilityHelpers.js'
+import { compileJSONPointer, parseJSONPointer } from './jsonPointer.js'
 import { initial, isEqual, last } from './utils.js'
 
 /**

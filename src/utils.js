@@ -6,7 +6,19 @@
  */
 // TODO: write unit tests
 export function isEqual (a, b) {
+  // FIXME: this function will return false for two objects with the same keys
+  //  but different order of keys
   return JSON.stringify(a) === JSON.stringify(b)
+}
+
+/**
+ * Test whether two values are strictly equal
+ * @param {*} a
+ * @param {*} b
+ * @returns {boolean}
+ */
+export function strictEqual (a, b) {
+  return a === b
 }
 
 /**
@@ -27,6 +39,26 @@ export function initial (array) {
 // TODO: write unit tests
 export function last (array) {
   return array[array.length - 1]
+}
+
+/**
+ * Test whether array1 starts with array2
+ * @param {Array} array1
+ * @param {Array} array2
+ * @param {function} [isEqual=strictEqual] Optional function to check equality
+ */
+export function startsWith (array1, array2, isEqual = strictEqual) {
+  if (array1.length < array2.length) {
+    return false
+  }
+
+  for (let i = 0; i < array2.length; i++) {
+    if (!isEqual(array1[i], array2[i])) {
+      return false
+    }
+  }
+
+  return true
 }
 
 /**

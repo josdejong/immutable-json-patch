@@ -198,6 +198,34 @@ describe('immutableJSONPatch', () => {
     assert.strictEqual(updatedJson.arr[2], json.obj)
   })
 
+  it('jsonpatch copy from child to parent', () => {
+    const json = {
+      arr: [1, 2, 3],
+      obj: { a: 4 }
+    }
+
+    const operations = [
+      { op: 'copy', from: '/obj', path: '' }
+    ]
+
+    const updatedJson = immutableJSONPatch(json, operations)
+    const revert = revertJSONPatch(json, operations)
+
+    assert.deepStrictEqual(updatedJson, { a: 4 })
+    assert.deepStrictEqual(revert, [
+      { op: 'replace', path: '', value: json }
+    ])
+
+    // test revert
+    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
+    const revert2 = revertJSONPatch(updatedJson, revert)
+
+    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(revert2, [
+      { op: 'replace', path: '', value: { a: 4 } }
+    ])
+  })
+
   it('jsonpatch move', () => {
     const json = {
       arr: [1, 2, 3],
@@ -337,6 +365,49 @@ describe('immutableJSONPatch', () => {
     ])
     assert.strictEqual(updatedJson.unchanged, json.unchanged)
     assert.strictEqual(updatedJson2.unchanged, json.unchanged)
+  })
+
+  it('jsonpatch move and replace (extract)', () => {
+    const json = {
+      arr: [1, 2, 3],
+      obj: { a: 4 },
+      unchanged: {}
+    }
+
+    const operations = [
+      { op: 'move', from: '/obj', path: '' }
+    ]
+
+    const updatedJson = immutableJSONPatch(json, operations)
+    const revert = revertJSONPatch(json, operations)
+
+    assert.deepStrictEqual(updatedJson, { a: 4 })
+    assert.deepStrictEqual(revert, [
+      { op: 'replace', path: '', value: json }
+    ])
+
+    // test revert
+    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
+    const revert2 = revertJSONPatch(updatedJson, revert)
+
+    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(revert2, [
+      { op: 'replace', path: '', value: { a: 4 } }
+    ])
+  })
+
+  // TODO: make robust against this
+  it.skip('jsonpatch should throw an error when moving parent to child', () => {
+    // const json = {
+    //   obj: { a: 4 }
+    // }
+    //
+    // const operations = [
+    //   { op: 'move', from: '', path: '/obj/b' }
+    // ]
+    //
+    // const updatedJson = immutableJSONPatch(json, operations)
+    // const revert = revertJSONPatch(json, operations)
   })
 
   it('jsonpatch test (ok)', () => {
