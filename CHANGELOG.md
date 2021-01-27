@@ -1,7 +1,7 @@
 # Changelog
 
 
-## not yet published, version 1.1.1
+## 2021-01-27, version 1.1.1
 
 - Fix revert operation of operation `move` not correct when moving a child 
   object to the root.
