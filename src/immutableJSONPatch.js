@@ -160,8 +160,11 @@ export function test (json, { path, value }) {
  * @param {JSONPath} path
  * @returns {boolean}
  */
-// TODO: write unit tests
 export function isArrayItem (json, path) {
+  if (path.length === 0) {
+    return false
+  }
+
   const parent = getIn(json, initial(path))
 
   return Array.isArray(parent)

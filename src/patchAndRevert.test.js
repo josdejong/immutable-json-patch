@@ -1,5 +1,5 @@
 import assert from 'assert'
-import { immutableJSONPatch } from './immutableJSONPatch.js'
+import { immutableJSONPatch, isArrayItem } from './immutableJSONPatch.js'
 import { revertJSONPatch } from './revertJSONPatch.js'
 
 describe('immutableJSONPatch', () => {
@@ -367,7 +367,7 @@ describe('immutableJSONPatch', () => {
     assert.strictEqual(updatedJson2.unchanged, json.unchanged)
   })
 
-  it('jsonpatch move and replace (extract)', () => {
+  it('jsonpatch move and replace (extract object)', () => {
     const json = {
       arr: [1, 2, 3],
       obj: { a: 4 },
@@ -393,6 +393,31 @@ describe('immutableJSONPatch', () => {
     assert.deepStrictEqual(updatedJson2, json)
     assert.deepStrictEqual(revert2, [
       { op: 'replace', path: '', value: { a: 4 } }
+    ])
+  })
+
+  it('jsonpatch move and replace (extract array)', () => {
+    const json = [1, 2, 3]
+
+    const operations = [
+      { op: 'move', from: '/2', path: '' }
+    ]
+
+    const updatedJson = immutableJSONPatch(json, operations)
+    const revert = revertJSONPatch(json, operations)
+
+    assert.deepStrictEqual(updatedJson, 3)
+    assert.deepStrictEqual(revert, [
+      { op: 'replace', path: '', value: json }
+    ])
+
+    // test revert
+    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
+    const revert2 = revertJSONPatch(updatedJson, revert)
+
+    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(revert2, [
+      { op: 'replace', path: '', value: 3 }
     ])
   })
 
@@ -468,6 +493,12 @@ describe('immutableJSONPatch', () => {
 
     assert.throws(() => immutableJSONPatch(json, operations),
       new Error('Test failed, value differs (path: "/obj")'))
+  })
+
+  it('should check whether a path is an array item', () => {
+    assert.strictEqual(isArrayItem({ a: 2 }, ['a']), false)
+    assert.strictEqual(isArrayItem([1, 2, 3], [0]), true)
+    assert.strictEqual(isArrayItem([1, 2, 3], []), false)
   })
 
   // TODO: write unit tests for the before and after callbacks
