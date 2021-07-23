@@ -1,7 +1,7 @@
 # Changelog
 
 
-## not yet published, version 1.1.2
+## 2021-07-23, version 1.1.2
 
 - Fix move operation from a nested property to the root not working when the
   root is an array.
