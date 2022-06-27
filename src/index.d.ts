@@ -1,25 +1,98 @@
 
 export type JSONPath = (string | number)[]
 
-export type JSONPatchOperationName = 'add' | 'remove' | 'replace' | 'copy' | 'move' | 'test'
+export type JSONValue = string | number | boolean | null
+export type JSONObject = { [key: string]: JSONData }
+export type JSONArray = JSONData[]
+export type JSONData = JSONObject | JSONArray | JSONValue
 
-export type JSONData = Object | Array<any> | number | string | boolean | null
-
-export type JSONPatchOperation = {
-  op: JSONPatchOperationName,
-  path: string,
-  from?: string,
-  value?: any
+export interface JSONPatchAdd {
+  op: 'add'
+  path: string
+  value: JSONData
 }
 
-export type PreprocessedJSONPatchOperation = {
-  op: JSONPatchOperationName,
-  path: JSONPath,
-  from?: JSONPath,
-  value?: any
+export interface JSONPatchRemove {
+  op: 'remove'
+  path: string
 }
+
+export interface JSONPatchReplace {
+  op: 'replace'
+  path: string
+  value: JSONData
+}
+
+export interface JSONPatchCopy {
+  op: 'copy'
+  path: string
+  from: string
+}
+
+export interface JSONPatchMove {
+  op: 'move'
+  path: string
+  from: string
+}
+
+export interface JSONPatchTest {
+  op: 'test'
+  path: string
+  value: JSONData
+}
+
+export type JSONPatchOperation =
+  | JSONPatchAdd
+  | JSONPatchRemove
+  | JSONPatchReplace
+  | JSONPatchCopy
+  | JSONPatchMove
+  | JSONPatchTest
 
 export type JSONPatchDocument = JSONPatchOperation[]
+
+export interface PreprocessedJSONPatchAdd {
+  op: 'add'
+  path: JSONPath
+  value: JSONData
+}
+
+export interface PreprocessedJSONPatchRemove {
+  op: 'remove'
+  path: JSONPath
+}
+
+export interface PreprocessedJSONPatchReplace {
+  op: 'replace'
+  path: JSONPath
+  value: JSONData
+}
+
+export interface PreprocessedJSONPatchCopy {
+  op: 'copy'
+  path: JSONPath
+  from: JSONPath
+}
+
+export interface PreprocessedJSONPatchMove {
+  op: 'move'
+  path: JSONPath
+  from: JSONPath
+}
+
+export interface PreprocessedJSONPatchTest {
+  op: 'test'
+  path: JSONPath
+  value: JSONData
+}
+
+export type PreprocessedJSONPatchOperation =
+  | PreprocessedJSONPatchAdd
+  | PreprocessedJSONPatchRemove
+  | PreprocessedJSONPatchReplace
+  | PreprocessedJSONPatchCopy
+  | PreprocessedJSONPatchMove
+  | PreprocessedJSONPatchTest
 
 export type JSONPatchOptions = {
   before?: (json: JSONData, operation: PreprocessedJSONPatchOperation)

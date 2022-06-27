@@ -1,6 +1,11 @@
 # Changelog
 
 
+## not yet published, version 2.0.0
+
+- Improved TypeScript definitions.
+
+
 ## 2021-07-23, version 1.1.2
 
 - Fix move operation from a nested property to the root not working when the
