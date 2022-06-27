@@ -132,12 +132,15 @@ The function returns a list with the reverse JSON Patch operations. These operat
 The library exposes a set of internally used functions to work with JSON pointers and to do immutable operations on JSON data:
 
 ```ts
-declare function parseJSONPointer (pointer: string) : JSONPath
-declare function compileJSONPointer (path: JSONPath) : string
+declare function parseJSONPointer (pointer: JSONPointer) : JSONPath
+declare function compileJSONPointer (path: JSONPath) : JSONPointer
+declare function compileJSONPointerProp (pathProp: string | number) : JSONPointer
+declare function appendToJSONPointer (pointer: JSONPointer, pathProp: string | number) : JSONPointer
+declare function startsWithJSONPointer (pointer: JSONPointer, searchPointer: JSONPointer) : boolean
 
 declare function getIn(json: JSONData, path: JSONPath) : JSONData
 declare function setIn(json: JSONData, path: JSONPath, value: JSONData, createPath?: boolean) : JSONData
-declare function updateIn(json: JSONData, path: JSONPath, callback: (json: JSONData) => JSONData)
+declare function updateIn(json: JSONData, path: JSONPath, callback: (json: JSONData) => JSONData) : JSONData
 declare function deleteIn(json: JSONData, path: JSONPath) : JSONData
 declare function existsIn(json: JSONData, path: JSONPath) : boolean
 declare function insertAt(json: JSONData, path: JSONPath, value: JSONData) : JSONData
