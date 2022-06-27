@@ -1,4 +1,4 @@
-const { immutableJSONPatch, revertJSONPatch } = require('../..')
+const { immutableJSONPatch, revertJSONPatch } = require('../../lib/cjs')
 
 const json = {}
 const operations = [
