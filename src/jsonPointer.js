@@ -1,6 +1,6 @@
 /**
  * Parse a JSON Pointer
- * @param {string} pointer
+ * @param {JSONPointer} pointer
  * @return {JSONPath}
  */
 export function parseJSONPointer (pointer) {
@@ -13,10 +13,41 @@ export function parseJSONPointer (pointer) {
 /**
  * Compile a JSON Pointer
  * @param {JSONPath} path
- * @return {string}
+ * @return {JSONPointer}
  */
 export function compileJSONPointer (path) {
   return path
-    .map(p => '/' + String(p).replace(/~/g, '~0').replace(/\//g, '~1'))
+    .map(compileJSONPointerProp)
     .join('')
+}
+
+/**
+ * Compile a single path property from a JSONPath
+ * @param {string | number} pathProp
+ * @returns {JSONPointer}
+ */
+export function compileJSONPointerProp (pathProp) {
+  return '/' + String(pathProp).replace(/~/g, '~0').replace(/\//g, '~1')
+}
+
+/**
+ * Append a path property to a JSONPointer
+ * @param {JSONPointer} pointer
+ * @param {string | number} pathProp
+ * @returns {JSONPointer}
+ */
+export function appendToJSONPointer (pointer, pathProp) {
+  return pointer + compileJSONPointerProp(pathProp)
+}
+
+/**
+ * @param {JSONPointer} pointer
+ * @param {JSONPointer} searchPointer
+ * @returns {boolean}
+ */
+export function startsWithJSONPointer (pointer, searchPointer) {
+  return (
+    pointer.startsWith(searchPointer) &&
+    (pointer.length === searchPointer.length || pointer[searchPointer.length] === '/')
+  )
 }

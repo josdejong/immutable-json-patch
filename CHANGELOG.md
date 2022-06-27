@@ -3,7 +3,9 @@
 
 ## not yet published, version 2.0.0
 
-- Improved TypeScript definitions.
+- Improved TypeScript definitions (there are some breaking changes).
+- Implemented new util functions: `compileJSONPointerProp`, 
+  `startsWithJSONPointer`, and `appendToJSONPointer`.
 
 
 ## 2021-07-23, version 1.1.2

@@ -1,5 +1,10 @@
 import assert from 'assert'
-import { compileJSONPointer, parseJSONPointer } from './jsonPointer.js'
+import {
+  appendToJSONPointer,
+  compileJSONPointer,
+  compileJSONPointerProp,
+  parseJSONPointer, startsWithJSONPointer
+} from './jsonPointer.js'
 
 describe('jsonPointer', () => {
   it('parseJSONPointer', () => {
@@ -16,5 +21,24 @@ describe('jsonPointer', () => {
     assert.deepStrictEqual(compileJSONPointer(['foo', '/~ ~/']), '/foo/~1~0 ~0~1')
     assert.deepStrictEqual(compileJSONPointer(['']), '/')
     assert.deepStrictEqual(compileJSONPointer([]), '')
+  })
+
+  it('compileJSONPointerProp', () => {
+    assert.deepStrictEqual(compileJSONPointerProp('foo'), '/foo')
+    assert.deepStrictEqual(compileJSONPointerProp('/~ ~/'), '/~1~0 ~0~1')
+    assert.deepStrictEqual(compileJSONPointerProp(''), '/')
+  })
+
+  it('appendToJSONPointer', () => {
+    assert.deepStrictEqual(appendToJSONPointer('/obj', 'a'), '/obj/a')
+    assert.deepStrictEqual(appendToJSONPointer('/foo', '/~ ~/'), '/foo/~1~0 ~0~1')
+  })
+
+  it('startsWithJSONPointer', () => {
+    assert.deepStrictEqual(startsWithJSONPointer('/foo/bar', '/foo'), true)
+    assert.deepStrictEqual(startsWithJSONPointer('/foo', '/bar'), false)
+    assert.deepStrictEqual(startsWithJSONPointer('/foo/bar', '/foo/bar'), true)
+    assert.deepStrictEqual(startsWithJSONPointer('/foo/bar', '/foo/bar/baz'), false)
+    assert.deepStrictEqual(startsWithJSONPointer('/foofoo', '/foo'), false)
   })
 })
