@@ -1,6 +1,6 @@
 {
   "name": "immutable-json-patch",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Immutable JSON patch with support for reverting operations",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
     "test:lib": "mocha test-lib/*.test.*",
     "build": "npm run clean && npm run build:ts && npm run build:esm && npm run build:cjs && npm run build:umd && npm run build:umd:min",
     "clean": "del-cli lib",
-    "build:ts": "cpy src/index.d.ts lib",
+    "build:ts": "cpy src/index.d.ts lib --flat",
     "build:esm": "babel src --out-dir lib/esm --source-maps --config-file ./babel.config.json",
     "build:cjs": "babel src --out-dir lib/cjs --source-maps --config-file ./babel-cjs.config.json && cpy tools/cjs/package.json lib/cjs --flat",
     "build:umd": "rollup lib/esm/index.js --format umd --name 'immutableJSONPatch' --sourcemap --output.file lib/umd/immutableJSONPatch.js && cpy tools/cjs/package.json lib/umd --flat",

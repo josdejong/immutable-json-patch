@@ -1,5 +1,10 @@
 # Changelog
 
+## 2022-06-27, version 2.0.1
+
+- Fix broken link to TypeScript definitions.
+
+
 ## 2022-06-27, version 2.0.0
 
 - Improved TypeScript definitions (there are some breaking changes).
