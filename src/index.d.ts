@@ -107,7 +107,8 @@ export declare function immutableJSONPatch (json: JSONData, operations: JSONPatc
 export declare function revertJSONPatch (json: JSONData, operations: JSONPatchDocument) : JSONPatchDocument
 
 // utils
-export declare function parseJSONPointer (pointer: JSONPointer) : JSONPath
+export declare function parseJSONPointer (pointer: JSONPointer) : string[]
+export declare function parseJSONPointerWithArrayIndices (json: JSONData, pointer: JSONPointer) : JSONPath
 export declare function compileJSONPointer (path: JSONPath) : JSONPointer
 export declare function compileJSONPointerProp (pathProp: string | number) : JSONPointer
 export declare function appendToJSONPointer (pointer: JSONPointer, pathProp: string | number) : JSONPointer

@@ -5,7 +5,8 @@
 
 - Improved TypeScript definitions (there are some breaking changes).
 - Implemented new util functions: `compileJSONPointerProp`, 
-  `startsWithJSONPointer`, and `appendToJSONPointer`.
+  `startsWithJSONPointer`, `appendToJSONPointer`, 
+  and `parseJSONPointerWithArrayIndices`.
 
 
 ## 2021-07-23, version 1.1.2
