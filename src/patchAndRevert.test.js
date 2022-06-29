@@ -116,6 +116,62 @@ describe('immutableJSONPatch', () => {
     assert.strictEqual(updatedJson.unchanged, json.unchanged)
   })
 
+  it('jsonpatch remove multiple items from an array', () => {
+    const json = [0, 1, 2, 3, 4]
+
+    const operations = [
+      { op: 'remove', path: '/2' },
+      { op: 'remove', path: '/2' },
+      { op: 'remove', path: '/2' }
+    ]
+
+    const updatedJson = immutableJSONPatch(json, operations)
+    const revert = revertJSONPatch(json, operations)
+
+    assert.deepStrictEqual(updatedJson, [0, 1])
+    assert.deepStrictEqual(revert, [
+      { op: 'add', path: '/2', value: 4 },
+      { op: 'add', path: '/2', value: 3 },
+      { op: 'add', path: '/2', value: 2 }
+    ])
+
+    // test revert
+    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
+    const revert2 = revertJSONPatch(updatedJson, revert)
+
+    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(revert2, operations)
+    assert.strictEqual(updatedJson.unchanged, json.unchanged)
+  })
+
+  it('jsonpatch remove multiple items from an array in reverse order', () => {
+    const json = [0, 1, 2, 3, 4]
+
+    const operations = [
+      { op: 'remove', path: '/4' },
+      { op: 'remove', path: '/3' },
+      { op: 'remove', path: '/2' }
+    ]
+
+    const updatedJson = immutableJSONPatch(json, operations)
+    const revert = revertJSONPatch(json, operations)
+
+    assert.deepStrictEqual(updatedJson, [0, 1])
+    assert.deepStrictEqual(revert, [
+      { op: 'add', path: '/2', value: 2 },
+      { op: 'add', path: '/3', value: 3 },
+      { op: 'add', path: '/4', value: 4 }
+    ])
+
+    // test revert
+    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
+    const revert2 = revertJSONPatch(updatedJson, revert)
+
+    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(revert2, operations)
+    assert.strictEqual(updatedJson.unchanged, json.unchanged)
+  })
+
   it('jsonpatch replace', () => {
     const json = {
       arr: [1, 2, 3],
