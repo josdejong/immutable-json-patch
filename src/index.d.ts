@@ -97,14 +97,19 @@ export type PreprocessedJSONPatchOperation =
 
 export type JSONPatchOptions = {
   before?: (json: JSONData, operation: PreprocessedJSONPatchOperation)
-    => { json?: JSONData, operation?: PreprocessedJSONPatchOperation } | undefined
+    => { json?: JSONData, operation?: PreprocessedJSONPatchOperation }
 
   after?: (json: JSONData, operation: PreprocessedJSONPatchOperation, previousJson: JSONData)
-    => JSONData | undefined
+    => JSONData
+}
+
+export type RevertJSONPatchOptions = {
+  before?: (json: JSONData, operation: PreprocessedJSONPatchOperation, revertOperations: JSONPatchOperation[])
+    => { json?: JSONData, revertOperations?: JSONPatchOperation[] }
 }
 
 export declare function immutableJSONPatch (json: JSONData, operations: JSONPatchDocument, options?: JSONPatchOptions) : JSONData
-export declare function revertJSONPatch (json: JSONData, operations: JSONPatchDocument) : JSONPatchDocument
+export declare function revertJSONPatch (json: JSONData, operations: JSONPatchDocument, options?: RevertJSONPatchOptions) : JSONPatchDocument
 
 // utils
 export declare function parseJSONPointer (pointer: JSONPointer) : string[]

@@ -114,16 +114,17 @@ Where:
     
 The function returns an updated JSON document where the JSON patch operations are applied. The original JSON document is not changed.
 
-#### revertJSONPatch(json, operations) => reverseOperations
+#### revertJSONPatch(json, operations, options) => reverseOperations
 
 ```ts
-declare function revertJSONPatch (json: JSONData, operations: JSONPatchDocument) : JSONPatchDocument
+declare function revertJSONPatch (json: JSONData, operations: JSONPatchDocument, options?: RevertJSONPatchOptions) : JSONPatchDocument
 ```
 
 Where:
 
 -   `json: JSONData` is a JSON document
 -   `operations: JSONPatchDocument` is an array with JSONPatch operations
+-   `options: JSONPatchOptions` is an optional object allowing passing a hook `before`. With this hook it is possible to alter the JSON document and/or generated `reverseOperations` before this is applied.
 
 The function returns a list with the reverse JSON Patch operations. These operations can be applied to the updated JSON document (the output of `immutableJSONPatch`) to restore the original JSON document.
 

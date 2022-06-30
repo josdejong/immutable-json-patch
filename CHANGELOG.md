@@ -1,5 +1,10 @@
 # Changelog
 
+## unpublished changes since version 2.0.1
+
+- Implement a `before` callback for `revertJSONPatch`.
+
+
 ## 2022-06-27, version 2.0.1
 
 - Fix broken link to TypeScript definitions.

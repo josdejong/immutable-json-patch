@@ -7,21 +7,43 @@ import { startsWith } from './utils.js'
  * Create the inverse of a set of json patch operations
  * @param {JSONData} json
  * @param {JSONPatchDocument} operations    Array with JSON patch actions
+ * @param {RevertJSONPatchOptions} [options]
  * @return {JSONPatchDocument} Returns the operations to revert the changes
  */
-export function revertJSONPatch (json, operations) {
-  let revertOperations = []
+export function revertJSONPatch (json, operations, options) {
+  let allRevertOperations = []
 
   immutableJSONPatch(json, operations, {
     before: (json, operation) => {
       const revertOp = REVERT_OPS[operation.op]
-      if (revertOp) {
-        revertOperations = revertOp(json, operation).concat(revertOperations)
+      if (!revertOp) {
+        return
+      }
+
+      let updatedJson
+      let revertOperations = revertOp(json, operation)
+
+      if (options && options.before) {
+        const res = options.before(json, operation, revertOperations)
+        if (res && res.revertOperations) {
+          revertOperations = res.revertOperations
+        }
+        if (res && res.json) {
+          updatedJson = res.json
+        }
+      }
+
+      allRevertOperations = revertOperations.concat(allRevertOperations)
+
+      if (updatedJson !== undefined) {
+        return {
+          json: updatedJson
+        }
       }
     }
   })
 
-  return revertOperations
+  return allRevertOperations
 }
 
 const REVERT_OPS = {
