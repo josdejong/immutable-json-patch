@@ -52,49 +52,6 @@ export type JSONPatchOperation =
 
 export type JSONPatchDocument = JSONPatchOperation[]
 
-export interface PreprocessedJSONPatchAdd {
-  op: 'add'
-  path: JSONPath
-  value: JSONData
-}
-
-export interface PreprocessedJSONPatchRemove {
-  op: 'remove'
-  path: JSONPath
-}
-
-export interface PreprocessedJSONPatchReplace {
-  op: 'replace'
-  path: JSONPath
-  value: JSONData
-}
-
-export interface PreprocessedJSONPatchCopy {
-  op: 'copy'
-  path: JSONPath
-  from: JSONPath
-}
-
-export interface PreprocessedJSONPatchMove {
-  op: 'move'
-  path: JSONPath
-  from: JSONPath
-}
-
-export interface PreprocessedJSONPatchTest {
-  op: 'test'
-  path: JSONPath
-  value: JSONData
-}
-
-export type PreprocessedJSONPatchOperation =
-  | PreprocessedJSONPatchAdd
-  | PreprocessedJSONPatchRemove
-  | PreprocessedJSONPatchReplace
-  | PreprocessedJSONPatchCopy
-  | PreprocessedJSONPatchMove
-  | PreprocessedJSONPatchTest
-
 export type JSONPatchOptions = {
   before?: (json: JSONData, operation: JSONPatchOperation)
     => { json?: JSONData, operation?: JSONPatchOperation }

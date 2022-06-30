@@ -5,7 +5,7 @@
 - BREAKING: the `before` and `after` hooks of the function `immutableJSONPatch`
   now pass a `JSONPatchOperation` instead of a `PreprocessedJSONPatchOperation`.
 - Implement a `before` callback for `revertJSONPatch`.
-- Export utility function `preprocessJSONPatchOperation`.
+- Export utility functions `parsePath` and `parseFrom`.
 
 
 ## 2022-06-27, version 2.0.1

@@ -133,7 +133,8 @@ The function returns a list with the reverse JSON Patch operations. These operat
 The library exposes a set of internally used functions to work with JSON pointers and to do immutable operations on JSON data:
 
 ```ts
-declare function preprocessJSONPatchOperation(json: JSONData, operation: JSONPatchOperation): PreprocessedJSONPatchOperation
+declare function parsePath(json: JSONData, path: JSONPointer): JSONPath
+declare function parseFrom(path: JSONPointer): JSONPath
 
 declare function parseJSONPointer (pointer: JSONPointer) : JSONPath
 declare function compileJSONPointer (path: JSONPath) : JSONPointer

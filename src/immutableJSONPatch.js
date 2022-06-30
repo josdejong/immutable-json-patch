@@ -39,14 +39,21 @@ export function immutableJSONPatch (json, operations, options) {
     }
 
     const previousJson = updatedJson
-    const preprocessedOperation = preprocessJSONPatchOperation(updatedJson, operation)
-    const patchOp = PATCH_OPS[preprocessedOperation.op]
-    if (patchOp) {
-      updatedJson = patchOp(updatedJson, preprocessedOperation)
-    } else if (preprocessedOperation.op === 'test') {
-      test(updatedJson, preprocessedOperation)
+    const path = parsePath(updatedJson, operation.path)
+    if (operation.op === 'add') {
+      updatedJson = add(updatedJson, path, operation.value)
+    } else if (operation.op === 'remove') {
+      updatedJson = remove(updatedJson, path)
+    } else if (operation.op === 'replace') {
+      updatedJson = replace(updatedJson, path, operation.value)
+    } else if (operation.op === 'copy') {
+      updatedJson = copy(updatedJson, path, parseFrom(operation.from))
+    } else if (operation.op === 'move') {
+      updatedJson = move(updatedJson, path, parseFrom(operation.from))
+    } else if (operation.op === 'test') {
+      test(updatedJson, path, operation.value)
     } else {
-      throw new Error('Unknown JSONPatch operation ' + JSON.stringify(preprocessedOperation.op))
+      throw new Error('Unknown JSONPatch operation ' + JSON.stringify(operation.op))
     }
 
     // TODO: test after
@@ -61,40 +68,34 @@ export function immutableJSONPatch (json, operations, options) {
   return updatedJson
 }
 
-const PATCH_OPS = {
-  add,
-  remove,
-  replace,
-  copy,
-  move
-}
-
 /**
  * Replace an existing item
  * @param {JSONData} json
- * @param {{ path: JSONPath, value: JSONData }} operation
+ * @param {JSONPath} path
+ * @param {JSONData} value
  * @return {JSONData}
  */
-export function replace (json, { path, value }) {
+export function replace (json, path, value) {
   return setIn(json, path, value)
 }
 
 /**
  * Remove an item or property
  * @param {JSONData} json
- * @param {{ path: JSONPath }} operation
+ * @param {JSONPath} path
  * @return {JSONData}
  */
-export function remove (json, { path }) {
+export function remove (json, path) {
   return deleteIn(json, path)
 }
 
 /**
  * @param {JSONData} json
- * @param {{ path: JSONPath, value: JSONData }} operation
+ * @param {JSONPath} path
+ * @param {JSONData} value
  * @return {JSONData}
  */
-export function add (json, { path, value }) {
+export function add (json, path, value) {
   if (isArrayItem(json, path)) {
     return insertAt(json, path, value)
   } else {
@@ -105,10 +106,11 @@ export function add (json, { path, value }) {
 /**
  * Copy a value
  * @param {JSONData} json
- * @param {{ path: JSONPath, from: JSONPath }} operation
+ * @param {JSONPath} path
+ * @param {JSONPath } from
  * @return {JSONData}
  */
-export function copy (json, { path, from }) {
+export function copy (json, path, from) {
   const value = getIn(json, from)
 
   if (isArrayItem(json, path)) {
@@ -123,10 +125,11 @@ export function copy (json, { path, from }) {
 /**
  * Move a value
  * @param {JSONData} json
- * @param {{ path: JSONPath, from: JSONPath }} operation
+ * @param {JSONPath} path
+ * @param {JSONPath} from
  * @return {JSONData}
  */
-export function move (json, { path, from }) {
+export function move (json, path, from) {
   const value = getIn(json, from)
   const removedJson = deleteIn(json, from)
 
@@ -139,9 +142,10 @@ export function move (json, { path, from }) {
  * Test whether the data contains the provided value at the specified path.
  * Throws an error when the test fails
  * @param {JSONData} json
- * @param {{ path: JSONPath, value: JSONData }} operation
+ * @param {JSONPath} path
+ * @param {JSONData} value
  */
-export function test (json, { path, value }) {
+export function test (json, path, value) {
   if (value === undefined) {
     throw new Error(`Test failed: no value provided (path: "${compileJSONPointer(path)}")`)
   }

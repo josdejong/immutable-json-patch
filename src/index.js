@@ -1,4 +1,4 @@
-export { immutableJSONPatch, preprocessJSONPatchOperation } from './immutableJSONPatch.js'
+export { immutableJSONPatch, parsePath, parseFrom } from './immutableJSONPatch.js'
 export { revertJSONPatch } from './revertJSONPatch.js'
 
 // utils
