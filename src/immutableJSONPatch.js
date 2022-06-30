@@ -23,7 +23,8 @@ export function immutableJSONPatch (json, operations, options) {
   for (let i = 0; i < operations.length; i++) {
     validateJSONPatchOperation(operations[i])
 
-    let operation = preprocessJSONPatchOperation(updatedJson, operations[i])
+    const operation = operations[i]
+    let preprocessedOperation = preprocessJSONPatchOperation(updatedJson, operation)
 
     // TODO: test before
     if (options && options.before) {
@@ -33,19 +34,19 @@ export function immutableJSONPatch (json, operations, options) {
           updatedJson = result.json
         }
         if (result.operation !== undefined) {
-          operation = result.operation
+          preprocessedOperation = result.operation
         }
       }
     }
 
     const previousJson = updatedJson
-    const patchOp = PATCH_OPS[operation.op]
+    const patchOp = PATCH_OPS[preprocessedOperation.op]
     if (patchOp) {
-      updatedJson = patchOp(updatedJson, operation)
-    } else if (operation.op === 'test') {
-      test(updatedJson, operation)
+      updatedJson = patchOp(updatedJson, preprocessedOperation)
+    } else if (preprocessedOperation.op === 'test') {
+      test(updatedJson, preprocessedOperation)
     } else {
-      throw new Error('Unknown JSONPatch operation ' + JSON.stringify(operation.op))
+      throw new Error('Unknown JSONPatch operation ' + JSON.stringify(preprocessedOperation.op))
     }
 
     // TODO: test after

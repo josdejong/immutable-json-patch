@@ -1,5 +1,9 @@
 import { existsIn, getIn } from './immutabilityHelpers.js'
-import { immutableJSONPatch, isArrayItem } from './immutableJSONPatch.js'
+import {
+  immutableJSONPatch,
+  isArrayItem,
+  preprocessJSONPatchOperation
+} from './immutableJSONPatch.js'
 import { compileJSONPointer } from './jsonPointer.js'
 import { startsWith } from './utils.js'
 
@@ -15,13 +19,15 @@ export function revertJSONPatch (json, operations, options) {
 
   immutableJSONPatch(json, operations, {
     before: (json, operation) => {
-      const revertOp = REVERT_OPS[operation.op]
+      const preprocessedOperation = preprocessJSONPatchOperation(json, operation)
+
+      const revertOp = REVERT_OPS[preprocessedOperation.op]
       if (!revertOp) {
         return
       }
 
       let updatedJson
-      let revertOperations = revertOp(json, operation)
+      let revertOperations = revertOp(json, preprocessedOperation)
 
       if (options && options.before) {
         const res = options.before(json, operation, revertOperations)

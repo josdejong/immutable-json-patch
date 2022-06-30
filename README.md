@@ -98,12 +98,12 @@ Where:
 
     ```ts
     const options = {
-      before: (json: JSONData, operation: PreprocessedJSONPatchOperation) => {
+      before: (json: JSONData, operation: JSONPatchOperation) => {
         console.log('before operation', { json, operation })
-        // return { json?: JSONData, operation?: PreprocessedJSONPatchOperation } | undefined
+        // return { json?: JSONData, operation?: JSONPatchOperation } | undefined
       },
     
-      after: (json: JSONData, operation: PreprocessedJSONPatchOperation, previousJson: JSONData) => {
+      after: (json: JSONData, operation: JSONPatchOperation, previousJson: JSONData) => {
         console.log('before operation', { json, operation, previousJson })
         // return JSONData | undefined
       }
@@ -133,6 +133,8 @@ The function returns a list with the reverse JSON Patch operations. These operat
 The library exposes a set of internally used functions to work with JSON pointers and to do immutable operations on JSON data:
 
 ```ts
+declare function preprocessJSONPatchOperation(json: JSONData, operation: JSONPatchOperation): PreprocessedJSONPatchOperation
+
 declare function parseJSONPointer (pointer: JSONPointer) : JSONPath
 declare function compileJSONPointer (path: JSONPath) : JSONPointer
 declare function compileJSONPointerProp (pathProp: string | number) : JSONPointer

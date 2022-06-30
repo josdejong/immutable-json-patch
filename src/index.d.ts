@@ -96,15 +96,15 @@ export type PreprocessedJSONPatchOperation =
   | PreprocessedJSONPatchTest
 
 export type JSONPatchOptions = {
-  before?: (json: JSONData, operation: PreprocessedJSONPatchOperation)
-    => { json?: JSONData, operation?: PreprocessedJSONPatchOperation }
+  before?: (json: JSONData, operation: JSONPatchOperation)
+    => { json?: JSONData, operation?: JSONPatchOperation }
 
-  after?: (json: JSONData, operation: PreprocessedJSONPatchOperation, previousJson: JSONData)
+  after?: (json: JSONData, operation: JSONPatchOperation, previousJson: JSONData)
     => JSONData
 }
 
 export type RevertJSONPatchOptions = {
-  before?: (json: JSONData, operation: PreprocessedJSONPatchOperation, revertOperations: JSONPatchOperation[])
+  before?: (json: JSONData, operation: JSONPatchOperation, revertOperations: JSONPatchOperation[])
     => { json?: JSONData, revertOperations?: JSONPatchOperation[] }
 }
 
