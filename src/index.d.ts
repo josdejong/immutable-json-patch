@@ -65,16 +65,18 @@ export type RevertJSONPatchOptions = {
     => { json?: JSONData, revertOperations?: JSONPatchOperation[] }
 }
 
-export declare function immutableJSONPatch (json: JSONData, operations: JSONPatchDocument, options?: JSONPatchOptions) : JSONData
-export declare function revertJSONPatch (json: JSONData, operations: JSONPatchDocument, options?: RevertJSONPatchOptions) : JSONPatchDocument
+export declare function immutableJSONPatch(json: JSONData, operations: JSONPatchDocument, options?: JSONPatchOptions) : JSONData
+export declare function revertJSONPatch(json: JSONData, operations: JSONPatchDocument, options?: RevertJSONPatchOptions) : JSONPatchDocument
 
 // utils
-export declare function parseJSONPointer (pointer: JSONPointer) : string[]
-export declare function parseJSONPointerWithArrayIndices (json: JSONData, pointer: JSONPointer) : JSONPath
-export declare function compileJSONPointer (path: JSONPath) : JSONPointer
-export declare function compileJSONPointerProp (pathProp: string | number) : JSONPointer
-export declare function appendToJSONPointer (pointer: JSONPointer, pathProp: string | number) : JSONPointer
-export declare function startsWithJSONPointer (pointer: JSONPointer, searchPointer: JSONPointer) : boolean
+export declare function parsePath(json: JSONData, pointer: JSONPointer) : JSONPath
+export declare function parseFrom(fromPointer: JSONPointer) : JSONPath
+export declare function parseJSONPointer(pointer: JSONPointer) : string[]
+export declare function parseJSONPointerWithArrayIndices(json: JSONData, pointer: JSONPointer) : JSONPath
+export declare function compileJSONPointer(path: JSONPath) : JSONPointer
+export declare function compileJSONPointerProp(pathProp: string | number) : JSONPointer
+export declare function appendToJSONPointer(pointer: JSONPointer, pathProp: string | number) : JSONPointer
+export declare function startsWithJSONPointer(pointer: JSONPointer, searchPointer: JSONPointer) : boolean
 export declare function getIn(json: JSONData, path: JSONPath) : JSONData
 export declare function setIn(json: JSONData, path: JSONPath, value: JSONData, createPath?: boolean) : JSONData
 export declare function updateIn(json: JSONData, path: JSONPath, callback: (json: JSONData) => JSONData) : JSONData

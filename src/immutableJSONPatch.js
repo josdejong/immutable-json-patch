@@ -218,32 +218,17 @@ export function validateJSONPatchOperation (operation) {
 
 /**
  * @param {JSONData} json
- * @param {JSONPatchOperation} operation
- * @return {PreprocessedJSONPatchOperation}
+ * @param {JSONPointer} pointer
+ * @return {JSONPath}
  */
-// TODO: write unit tests
-export function preprocessJSONPatchOperation (json, operation) {
-  return {
-    op: operation.op,
-    path: parsePath(json, operation.path),
-    from: operation.from !== undefined ? parseFrom(operation.from) : undefined,
-    value: operation.value
-  }
+export function parsePath (json, pointer) {
+  return resolvePathIndex(json, parseJSONPointer(pointer))
 }
 
 /**
- * @param {JSONData} json
- * @param {JSONPointer} path
+ * @param {JSONPointer} fromPointer
  * @return {JSONPath}
  */
-export function parsePath (json, path) {
-  return resolvePathIndex(json, parseJSONPointer(path))
-}
-
-/**
- * @param {JSONPointer} from
- * @return {JSONPath}
- */
-export function parseFrom (from) {
-  return parseJSONPointer(from)
+export function parseFrom (fromPointer) {
+  return parseJSONPointer(fromPointer)
 }
