@@ -6,7 +6,6 @@ export {
   compileJSONPointer,
   compileJSONPointerProp,
   parseJSONPointer,
-  parseJSONPointerWithArrayIndices,
   startsWithJSONPointer,
   appendToJSONPointer
 } from './jsonPointer.js'

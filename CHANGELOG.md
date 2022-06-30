@@ -4,6 +4,10 @@
 
 - BREAKING: the `before` and `after` hooks of the function `immutableJSONPatch`
   now pass a `JSONPatchOperation` instead of a `PreprocessedJSONPatchOperation`.
+- BREAKING: dropping function `parseJSONPointerWithArrayIndices` (introduced in
+  v2.0.0) again, and changing `JSONPath` to always return an array with strings.
+  Reason is that a mix of strings and numbers is fragile. It leads to bad usage
+  patterns and can easily cause bugs.
 - Implement a `before` callback for `revertJSONPatch`.
 - Export utility functions `parsePath` and `parseFrom`.
 

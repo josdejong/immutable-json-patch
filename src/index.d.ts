@@ -1,6 +1,6 @@
 
 export type JSONPointer = string // a string containing a JSONPointer like '/array/3/name'
-export type JSONPath = (string | number)[]
+export type JSONPath = string[] // an array like ['array', '3', 'name']
 
 export type JSONValue = string | number | boolean | null
 export type JSONObject = { [key: string]: JSONData }
@@ -71,8 +71,7 @@ export declare function revertJSONPatch(json: JSONData, operations: JSONPatchDoc
 // utils
 export declare function parsePath(json: JSONData, pointer: JSONPointer) : JSONPath
 export declare function parseFrom(fromPointer: JSONPointer) : JSONPath
-export declare function parseJSONPointer(pointer: JSONPointer) : string[]
-export declare function parseJSONPointerWithArrayIndices(json: JSONData, pointer: JSONPointer) : JSONPath
+export declare function parseJSONPointer(pointer: JSONPointer) : JSONPath
 export declare function compileJSONPointer(path: JSONPath) : JSONPointer
 export declare function compileJSONPointerProp(pathProp: string | number) : JSONPointer
 export declare function appendToJSONPointer(pointer: JSONPointer, pathProp: string | number) : JSONPointer
