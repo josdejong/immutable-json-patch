@@ -19,14 +19,13 @@ export function revertJSONPatch (json, operations, options) {
 
   immutableJSONPatch(json, operations, {
     before: (json, operation) => {
-      const preprocessedOperation = preprocessJSONPatchOperation(json, operation)
-
-      const revertOp = REVERT_OPS[preprocessedOperation.op]
+      const revertOp = REVERT_OPS[operation.op]
       if (!revertOp) {
         return
       }
 
       let updatedJson
+      const preprocessedOperation = preprocessJSONPatchOperation(json, operation)
       let revertOperations = revertOp(json, preprocessedOperation)
 
       if (options && options.before) {

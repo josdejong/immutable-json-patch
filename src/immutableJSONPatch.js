@@ -23,8 +23,7 @@ export function immutableJSONPatch (json, operations, options) {
   for (let i = 0; i < operations.length; i++) {
     validateJSONPatchOperation(operations[i])
 
-    const operation = operations[i]
-    let preprocessedOperation = preprocessJSONPatchOperation(updatedJson, operation)
+    let operation = operations[i]
 
     // TODO: test before
     if (options && options.before) {
@@ -34,12 +33,13 @@ export function immutableJSONPatch (json, operations, options) {
           updatedJson = result.json
         }
         if (result.operation !== undefined) {
-          preprocessedOperation = result.operation
+          operation = result.operation
         }
       }
     }
 
     const previousJson = updatedJson
+    const preprocessedOperation = preprocessJSONPatchOperation(updatedJson, operation)
     const patchOp = PATCH_OPS[preprocessedOperation.op]
     if (patchOp) {
       updatedJson = patchOp(updatedJson, preprocessedOperation)
@@ -221,10 +221,25 @@ export function validateJSONPatchOperation (operation) {
 export function preprocessJSONPatchOperation (json, operation) {
   return {
     op: operation.op,
-    path: resolvePathIndex(json, parseJSONPointer(operation.path)),
-    from: operation.from !== undefined
-      ? parseJSONPointer(operation.from)
-      : null,
+    path: parsePath(json, operation.path),
+    from: operation.from !== undefined ? parseFrom(operation.from) : undefined,
     value: operation.value
   }
+}
+
+/**
+ * @param {JSONData} json
+ * @param {JSONPointer} path
+ * @return {JSONPath}
+ */
+export function parsePath (json, path) {
+  return resolvePathIndex(json, parseJSONPointer(path))
+}
+
+/**
+ * @param {JSONPointer} from
+ * @return {JSONPath}
+ */
+export function parseFrom (from) {
+  return parseJSONPointer(from)
 }
