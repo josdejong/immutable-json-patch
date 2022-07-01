@@ -76,6 +76,13 @@ export declare function compileJSONPointer(path: JSONPath) : JSONPointer
 export declare function compileJSONPointerProp(pathProp: string | number) : JSONPointer
 export declare function appendToJSONPointer(pointer: JSONPointer, pathProp: string | number) : JSONPointer
 export declare function startsWithJSONPointer(pointer: JSONPointer, searchPointer: JSONPointer) : boolean
+export declare function isJSONPatchOperation(operation: unknown): operation is JSONPatchOperation
+export declare function isJSONPatchAdd(operation: unknown): operation is JSONPatchAdd
+export declare function isJSONPatchRemove(operation: unknown): operation is JSONPatchRemove
+export declare function isJSONPatchReplace(operation: unknown): operation is JSONPatchReplace
+export declare function isJSONPatchCopy(operation: unknown): operation is JSONPatchCopy
+export declare function isJSONPatchMove(operation: unknown): operation is JSONPatchMove
+export declare function isJSONPatchTest(operation: unknown): operation is JSONPatchTest
 export declare function getIn(json: JSONData, path: JSONPath) : JSONData
 export declare function setIn(json: JSONData, path: JSONPath, value: JSONData, createPath?: boolean) : JSONData
 export declare function updateIn(json: JSONData, path: JSONPath, callback: (json: JSONData) => JSONData) : JSONData

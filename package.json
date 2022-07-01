@@ -1,6 +1,6 @@
 {
   "name": "immutable-json-patch",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Immutable JSON patch with support for reverting operations",
   "repository": {
     "type": "git",
@@ -41,9 +41,9 @@
   "author": "Jos de Jong",
   "license": "ISC",
   "devDependencies": {
-    "@babel/cli": "7.17.10",
-    "@babel/core": "7.18.5",
-    "@babel/preset-env": "7.18.2",
+    "@babel/cli": "7.18.6",
+    "@babel/core": "7.18.6",
+    "@babel/preset-env": "7.18.6",
     "cpy-cli": "4.1.0",
     "del-cli": "4.0.1",
     "eslint": "8.18.0",

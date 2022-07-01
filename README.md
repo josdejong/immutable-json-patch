@@ -128,9 +128,16 @@ Where:
 
 The function returns a list with the reverse JSON Patch operations. These operations can be applied to the updated JSON document (the output of `immutableJSONPatch`) to restore the original JSON document.
 
+#### type guards
+
+The library exposes the following type guards:
+
+```ts
+```
+
 #### util functions
 
-The library exposes a set of internally used functions to work with JSON pointers and to do immutable operations on JSON data:
+The library exposes a set of utility functions to work with JSON pointers and to do immutable operations on JSON data:
 
 ```ts
 declare function parsePath(json: JSONData, path: JSONPointer): JSONPath
@@ -141,6 +148,14 @@ declare function compileJSONPointer (path: JSONPath) : JSONPointer
 declare function compileJSONPointerProp (pathProp: string | number) : JSONPointer
 declare function appendToJSONPointer (pointer: JSONPointer, pathProp: string | number) : JSONPointer
 declare function startsWithJSONPointer (pointer: JSONPointer, searchPointer: JSONPointer) : boolean
+
+declare function isJSONPatchOperation(operation: unknown): operation is JSONPatchOperation
+declare function isJSONPatchAdd(operation: unknown): operation is JSONPatchAdd
+declare function isJSONPatchRemove(operation: unknown): operation is JSONPatchRemove
+declare function isJSONPatchReplace(operation: unknown): operation is JSONPatchReplace
+declare function isJSONPatchCopy(operation: unknown): operation is JSONPatchCopy
+declare function isJSONPatchMove(operation: unknown): operation is JSONPatchMove
+declare function isJSONPatchTest(operation: unknown): operation is JSONPatchTest
 
 declare function getIn(json: JSONData, path: JSONPath) : JSONData
 declare function setIn(json: JSONData, path: JSONPath, value: JSONData, createPath?: boolean) : JSONData

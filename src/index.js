@@ -10,6 +10,15 @@ export {
   appendToJSONPointer
 } from './jsonPointer.js'
 export {
+  isJSONPatchOperation,
+  isJSONPatchAdd,
+  isJSONPatchRemove,
+  isJSONPatchReplace,
+  isJSONPatchCopy,
+  isJSONPatchMove,
+  isJSONPatchTest
+} from './typeguards.js'
+export {
   getIn,
   setIn,
   existsIn,
