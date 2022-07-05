@@ -40,5 +40,6 @@ describe('jsonPointer', () => {
     assert.deepStrictEqual(startsWithJSONPointer('/foo/bar', '/foo/bar'), true)
     assert.deepStrictEqual(startsWithJSONPointer('/foo/bar', '/foo/bar/baz'), false)
     assert.deepStrictEqual(startsWithJSONPointer('/foofoo', '/foo'), false)
+    assert.deepStrictEqual(startsWithJSONPointer('/foo/bar', ''), true)
   })
 })
