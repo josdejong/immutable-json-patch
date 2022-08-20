@@ -7,7 +7,7 @@
     "url": "https://github.com/josdejong/immutable-json-patch.git"
   },
   "type": "module",
-  "main": "lib/cjs/index.js",
+  "main": "lib/esm/index.js",
   "module": "lib/esm/index.js",
   "browser": "lib/umd/immutableJSONPatch.js",
   "types": "lib/index.d.ts",

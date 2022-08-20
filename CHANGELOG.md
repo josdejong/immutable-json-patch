@@ -1,5 +1,11 @@
 # Changelog
 
+## not yet published, version 4.0.0
+
+- BREAKING: Changed the `"main"` field in `package.json` to point to
+  the ES Module entry point instead of CommonJS.
+
+
 ## 2022-07-01, version 3.0.0
 
 - BREAKING: the `before` and `after` hooks of the function `immutableJSONPatch`
