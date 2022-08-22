@@ -164,7 +164,7 @@ export function updateIn (object: JSONData, path: JSONPath, callback: (value: JS
  *
  * @return Returns a new, updated object or array
  */
-export function deleteIn<T extends JSONObject | JSONArray> (object: T, path: JSONPath) : T {
+export function deleteIn<T extends JSONData> (object: T, path: JSONPath) : T {
   if (path.length === 0) {
     return object
   }
@@ -181,9 +181,9 @@ export function deleteIn<T extends JSONObject | JSONArray> (object: T, path: JSO
     } else {
       const updatedObject = shallowClone(object)
 
-      if (Array.isArray(updatedObject)) {
+      if (isJSONArray(updatedObject)) {
         updatedObject.splice(parseInt(key), 1)
-      } else {
+      } if (isJSONObject(updatedObject)) {
         delete updatedObject[key]
       }
 
