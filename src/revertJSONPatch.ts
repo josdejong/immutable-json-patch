@@ -6,36 +6,46 @@ import {
   parsePath
 } from './immutableJSONPatch.js'
 import { compileJSONPointer } from './jsonPointer.js'
+import type {
+  JSONData,
+  JSONPatchAdd,
+  JSONPatchDocument,
+  JSONPatchMove,
+  JSONPatchRemove,
+  JSONPatchReplace,
+  JSONPath,
+  RevertJSONPatchOptions
+} from './types.js'
 import { startsWith } from './utils.js'
 
 /**
  * Create the inverse of a set of json patch operations
- * @param {JSONData} json
- * @param {JSONPatchDocument} operations    Array with JSON patch actions
- * @param {RevertJSONPatchOptions} [options]
- * @return {JSONPatchDocument} Returns the operations to revert the changes
+ * @param json
+ * @param operations Array with JSON patch actions
+ * @param [options]
+ * @return Returns the operations to revert the changes
  */
-export function revertJSONPatch (json, operations, options) {
-  let allRevertOperations = []
+export function revertJSONPatch (json: JSONData, operations: JSONPatchDocument, options?: RevertJSONPatchOptions) : JSONPatchDocument {
+  let allRevertOperations: JSONPatchDocument = []
 
   immutableJSONPatch(json, operations, {
     before: (json, operation) => {
-      let revertOperations
+      let revertOperations: JSONPatchDocument
       const path = parsePath(json, operation.path)
       if (operation.op === 'add') {
-        revertOperations = revertAdd(json, path, operation.value)
+        revertOperations = revertAdd(json, path)
       } else if (operation.op === 'remove') {
         revertOperations = revertRemove(json, path)
       } else if (operation.op === 'replace') {
         revertOperations = revertReplace(json, path)
       } else if (operation.op === 'copy') {
-        revertOperations = revertCopy(json, path, operation.value)
+        revertOperations = revertCopy(json, path)
       } else if (operation.op === 'move') {
         revertOperations = revertMove(json, path, parseFrom(operation.from))
       } else if (operation.op === 'test') {
         revertOperations = []
       } else {
-        throw new Error('Unknown JSONPatch operation ' + JSON.stringify(operation.op))
+        throw new Error('Unknown JSONPatch operation ' + JSON.stringify(operation))
       }
 
       let updatedJson
@@ -62,12 +72,7 @@ export function revertJSONPatch (json, operations, options) {
   return allRevertOperations
 }
 
-/**
- * @param {JSONData} json
- * @param {JSONPath} path
- * @return {JSONPatchDocument}
- */
-function revertReplace (json, path) {
+function revertReplace (json: JSONData, path: JSONPath) : [JSONPatchReplace] {
   return [{
     op: 'replace',
     path: compileJSONPointer(path),
@@ -75,12 +80,7 @@ function revertReplace (json, path) {
   }]
 }
 
-/**
- * @param {JSONData} json
- * @param {JSONPath} path
- * @return {JSONPatchDocument}
- */
-function revertRemove (json, path) {
+function revertRemove (json: JSONData, path: JSONPath) : [JSONPatchAdd] {
   return [{
     op: 'add',
     path: compileJSONPointer(path),
@@ -88,40 +88,22 @@ function revertRemove (json, path) {
   }]
 }
 
-/**
- * @param {JSONData} json
- * @param {JSONPath} path
- * @param {JSONData} value
- * @return {JSONPatchDocument}
- */
-function revertAdd (json, path, value) {
+function revertAdd (json: JSONData, path: JSONPath) : [JSONPatchRemove] | [JSONPatchReplace] {
   if (isArrayItem(json, path) || !existsIn(json, path)) {
     return [{
       op: 'remove',
       path: compileJSONPointer(path)
     }]
   } else {
-    return revertReplace(json, path, value)
+    return revertReplace(json, path)
   }
 }
 
-/**
- * @param {JSONData} json
- * @param {JSONPath} path
- * @param {JSONData} value
- * @return {JSONPatchDocument}
- */
-function revertCopy (json, path, value) {
-  return revertAdd(json, path, value)
+function revertCopy (json: JSONData, path: JSONPath) : [JSONPatchRemove] | [JSONPatchReplace] {
+  return revertAdd(json, path)
 }
 
-/**
- * @param {JSONData} json
- * @param {JSONPath} path
- * @param {JSONPath} from
- * @return {JSONPatchDocument}
- */
-function revertMove (json, path, from) {
+function revertMove (json: JSONData, path: JSONPath, from: JSONPath) : [JSONPatchReplace] | [JSONPatchMove] | [JSONPatchMove, JSONPatchAdd] {
   if (path.length < from.length && startsWith(from, path)) {
     // replacing the parent with the child
     return [
@@ -133,18 +115,21 @@ function revertMove (json, path, from) {
     ]
   }
 
-  let revert = [
-    {
-      op: 'move',
-      from: compileJSONPointer(path),
-      path: compileJSONPointer(from)
-    }
-  ]
+  const move: JSONPatchMove = {
+    op: 'move',
+    from: compileJSONPointer(path),
+    path: compileJSONPointer(from)
+  }
 
   if (!isArrayItem(json, path) && existsIn(json, path)) {
     // the move replaces an existing value in an object
-    revert = revert.concat(revertRemove(json, path))
+    return [
+      move,
+      ...revertRemove(json, path)
+    ]
+  } else {
+    return [
+      move
+    ]
   }
-
-  return revert
 }

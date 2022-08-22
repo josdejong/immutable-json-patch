@@ -6,24 +6,30 @@ import {
   setIn
 } from './immutabilityHelpers.js'
 import { compileJSONPointer, parseJSONPointer } from './jsonPointer.js'
+import {
+  JSONArray,
+  JSONData,
+  JSONObject,
+  JSONPatchDocument,
+  JSONPatchOperation,
+  JSONPatchOptions,
+  JSONPath,
+  JSONPointer
+} from './types'
 import { initial, isEqual, last } from './utils.js'
 
 /**
  * Apply a patch to a JSON object
  * The original JSON object will not be changed,
  * instead, the patch is applied in an immutable way
- * @param {JSONData} json
- * @param {JSONPatchDocument} operations    Array with JSON patch actions
- * @param {JSONPatchOptions} [options]
- * @return {JSONData} Returns the updated json
  */
-export function immutableJSONPatch (json, operations, options) {
+export function immutableJSONPatch (json: JSONData, operations: JSONPatchDocument, options?:JSONPatchOptions) : JSONData {
   let updatedJson = json
 
   for (let i = 0; i < operations.length; i++) {
     validateJSONPatchOperation(operations[i])
 
-    let operation = operations[i]
+    let operation: JSONPatchOperation = operations[i]
 
     // TODO: test before
     if (options && options.before) {
@@ -43,7 +49,7 @@ export function immutableJSONPatch (json, operations, options) {
     if (operation.op === 'add') {
       updatedJson = add(updatedJson, path, operation.value)
     } else if (operation.op === 'remove') {
-      updatedJson = remove(updatedJson, path)
+      updatedJson = remove(updatedJson as JSONObject | JSONArray, path)
     } else if (operation.op === 'replace') {
       updatedJson = replace(updatedJson, path, operation.value)
     } else if (operation.op === 'copy') {
@@ -53,7 +59,7 @@ export function immutableJSONPatch (json, operations, options) {
     } else if (operation.op === 'test') {
       test(updatedJson, path, operation.value)
     } else {
-      throw new Error('Unknown JSONPatch operation ' + JSON.stringify(operation.op))
+      throw new Error('Unknown JSONPatch operation ' + JSON.stringify(operation))
     }
 
     // TODO: test after
@@ -70,32 +76,22 @@ export function immutableJSONPatch (json, operations, options) {
 
 /**
  * Replace an existing item
- * @param {JSONData} json
- * @param {JSONPath} path
- * @param {JSONData} value
- * @return {JSONData}
  */
-export function replace (json, path, value) {
+export function replace (json: JSONData, path: JSONPath, value: JSONData) : JSONData {
   return setIn(json, path, value)
 }
 
 /**
  * Remove an item or property
- * @param {JSONData} json
- * @param {JSONPath} path
- * @return {JSONData}
  */
-export function remove (json, path) {
+export function remove<T extends JSONArray | JSONObject> (json: T, path: JSONPath) : T {
   return deleteIn(json, path)
 }
 
 /**
- * @param {JSONData} json
- * @param {JSONPath} path
- * @param {JSONData} value
- * @return {JSONData}
+ * Add an item or property
  */
-export function add (json, path, value) {
+export function add (json: JSONData, path: JSONPath, value: JSONData) : JSONData {
   if (isArrayItem(json, path)) {
     return insertAt(json, path, value)
   } else {
@@ -105,12 +101,8 @@ export function add (json, path, value) {
 
 /**
  * Copy a value
- * @param {JSONData} json
- * @param {JSONPath} path
- * @param {JSONPath } from
- * @return {JSONData}
  */
-export function copy (json, path, from) {
+export function copy (json: JSONData, path: JSONPath, from: JSONPath) : JSONData {
   const value = getIn(json, from)
 
   if (isArrayItem(json, path)) {
@@ -124,13 +116,11 @@ export function copy (json, path, from) {
 
 /**
  * Move a value
- * @param {JSONData} json
- * @param {JSONPath} path
- * @param {JSONPath} from
- * @return {JSONData}
  */
-export function move (json, path, from) {
+export function move (json: JSONData, path: JSONPath, from: JSONPath) : JSONData {
   const value = getIn(json, from)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const removedJson = deleteIn(json, from)
 
   return isArrayItem(removedJson, path)
@@ -141,11 +131,8 @@ export function move (json, path, from) {
 /**
  * Test whether the data contains the provided value at the specified path.
  * Throws an error when the test fails
- * @param {JSONData} json
- * @param {JSONPath} path
- * @param {JSONData} value
  */
-export function test (json, path, value) {
+export function test (json: JSONData, path: JSONPath, value: JSONData) {
   if (value === undefined) {
     throw new Error(`Test failed: no value provided (path: "${compileJSONPointer(path)}")`)
   }
@@ -160,12 +147,7 @@ export function test (json, path, value) {
   }
 }
 
-/**
- * @param {JSONData} json
- * @param {JSONPath} path
- * @returns {boolean}
- */
-export function isArrayItem (json, path) {
+export function isArrayItem (json: JSONData, path: JSONPath) : json is JSONArray {
   if (path.length === 0) {
     return false
   }
@@ -177,11 +159,9 @@ export function isArrayItem (json, path) {
 
 /**
  * Resolve the path index of an array, resolves indexes '-'
- * @param {JSONData} json
- * @param {JSONPath} path
- * @returns {JSONPath} Returns the resolved path
+ * @returns Returns the resolved path
  */
-export function resolvePathIndex (json, path) {
+export function resolvePathIndex (json: JSONData, path: JSONPath) : JSONPath {
   if (last(path) !== '-') {
     return path
   }
@@ -189,15 +169,16 @@ export function resolvePathIndex (json, path) {
   const parentPath = initial(path)
   const parent = getIn(json, parentPath)
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   return parentPath.concat(parent.length)
 }
 
 /**
  * Validate a JSONPatch operation.
  * Throws an error when there is an issue
- * @param {JSONPatchOperation} operation
  */
-export function validateJSONPatchOperation (operation) {
+export function validateJSONPatchOperation (operation: JSONPatchOperation) {
   // TODO: write unit tests
   const ops = ['add', 'remove', 'replace', 'copy', 'move', 'test']
 
@@ -216,19 +197,10 @@ export function validateJSONPatchOperation (operation) {
   }
 }
 
-/**
- * @param {JSONData} json
- * @param {JSONPointer} pointer
- * @return {JSONPath}
- */
-export function parsePath (json, pointer) {
+export function parsePath (json: JSONData, pointer: JSONPointer) : JSONPath {
   return resolvePathIndex(json, parseJSONPointer(pointer))
 }
 
-/**
- * @param {JSONPointer} fromPointer
- * @return {JSONPath}
- */
-export function parseFrom (fromPointer) {
+export function parseFrom (fromPointer: JSONPointer) : JSONPath {
   return parseJSONPointer(fromPointer)
 }

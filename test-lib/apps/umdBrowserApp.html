@@ -13,11 +13,13 @@
     ]
 
     const updatedJson = immutableJSONPatch.immutableJSONPatch(json, operations)
-    document.write('updated json:' + JSON.stringify(updatedJson) + '<br>')
+    document.body.appendChild(document.createTextNode('updated json:' + JSON.stringify(updatedJson)))
+    document.body.appendChild(document.createElement('BR'))
 
     const reverseOperations = immutableJSONPatch.revertJSONPatch(json, operations)
     const revertedJson = immutableJSONPatch.immutableJSONPatch(updatedJson, reverseOperations)
-    document.write('reverted json:' + JSON.stringify(revertedJson) + '<br>')
+    document.body.appendChild(document.createTextNode('reverted json:' + JSON.stringify(revertedJson)))
+    document.body.appendChild(document.createElement('BR'))
   </script>
 </body>
 </html>

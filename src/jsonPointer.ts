@@ -1,9 +1,9 @@
+import type { JSONPath, JSONPointer } from './types'
+
 /**
  * Parse a JSON Pointer
- * @param {JSONPointer} pointer
- * @return {string[]}
  */
-export function parseJSONPointer (pointer) {
+export function parseJSONPointer (pointer: JSONPointer) : string[] {
   const path = pointer.split('/')
   path.shift() // remove the first empty entry
 
@@ -12,10 +12,8 @@ export function parseJSONPointer (pointer) {
 
 /**
  * Compile a JSON Pointer
- * @param {JSONPath} path
- * @return {JSONPointer}
  */
-export function compileJSONPointer (path) {
+export function compileJSONPointer (path: JSONPath) : JSONPointer {
   return path
     .map(compileJSONPointerProp)
     .join('')
@@ -23,29 +21,22 @@ export function compileJSONPointer (path) {
 
 /**
  * Compile a single path property from a JSONPath
- * @param {string | number} pathProp
- * @returns {JSONPointer}
  */
-export function compileJSONPointerProp (pathProp) {
+export function compileJSONPointerProp (pathProp: string | number) : JSONPointer {
   return '/' + String(pathProp).replace(/~/g, '~0').replace(/\//g, '~1')
 }
 
 /**
  * Append a path property to a JSONPointer
- * @param {JSONPointer} pointer
- * @param {string | number} pathProp
- * @returns {JSONPointer}
  */
-export function appendToJSONPointer (pointer, pathProp) {
+export function appendToJSONPointer (pointer: JSONPointer, pathProp: string | number) : JSONPointer {
   return pointer + compileJSONPointerProp(pathProp)
 }
 
 /**
- * @param {JSONPointer} pointer
- * @param {JSONPointer} searchPointer
- * @returns {boolean}
+ * Test whether `pointer` starts with `searchPointer`
  */
-export function startsWithJSONPointer (pointer, searchPointer) {
+export function startsWithJSONPointer (pointer: JSONPointer, searchPointer: JSONPointer) : boolean {
   return (
     pointer.startsWith(searchPointer) &&
     (pointer.length === searchPointer.length || pointer[searchPointer.length] === '/')

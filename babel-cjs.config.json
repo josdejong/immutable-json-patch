@@ -1,13 +1,18 @@
 {
   "presets": [
     [
-      "@babel/env",
+      "@babel/preset-env",
       {
-        "targets": "> 0.25%, not dead"
+        "targets": "> 0.25%, not dead",
+        "modules": "commonjs"
       }
+    ],
+    [
+      "@babel/preset-typescript"
     ]
   ],
   "ignore": [
-    "**/*.test.js"
+    "**/*.test.js",
+    "**/*.test.ts"
   ]
 }
