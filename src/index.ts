@@ -2,22 +2,8 @@ export { immutableJSONPatch, parsePath, parseFrom } from './immutableJSONPatch.j
 export { revertJSONPatch } from './revertJSONPatch.js'
 
 // utils
-export {
-  compileJSONPointer,
-  compileJSONPointerProp,
-  parseJSONPointer,
-  startsWithJSONPointer,
-  appendToJSONPointer
-} from './jsonPointer.js'
-export {
-  isJSONPatchOperation,
-  isJSONPatchAdd,
-  isJSONPatchRemove,
-  isJSONPatchReplace,
-  isJSONPatchCopy,
-  isJSONPatchMove,
-  isJSONPatchTest
-} from './typeguards.js'
+export * from './jsonPointer.js'
+export * from './typeguards.js'
 export {
   getIn,
   setIn,

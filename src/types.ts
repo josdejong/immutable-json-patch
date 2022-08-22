@@ -2,7 +2,10 @@ export type JSONPointer = string // a string containing a JSONPointer like '/arr
 export type JSONPath = string[] // an array like ['array', '3', 'name']
 
 export type JSONValue = string | number | boolean | null
-export type JSONData = { [key: string]: JSONData } | JSONData[] | JSONValue
+export type JSONData =
+  | { [key: string]: JSONData } // object
+  | JSONData[] // array
+  | JSONValue // value
 export type JSONObject = { [key: string]: JSONData }
 export type JSONArray = JSONData[]
 

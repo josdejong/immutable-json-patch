@@ -1,4 +1,5 @@
 import {
+  JSONArray, JSONObject,
   JSONPatchAdd,
   JSONPatchCopy,
   JSONPatchMove,
@@ -7,6 +8,14 @@ import {
   JSONPatchReplace,
   JSONPatchTest
 } from './types'
+
+export function isJSONArray (value: unknown) : value is JSONArray {
+  return Array.isArray(value)
+}
+
+export function isJSONObject (value: unknown) : value is JSONObject {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+}
 
 export function isJSONPatchOperation (value: unknown) : value is JSONPatchOperation {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -26,25 +35,25 @@ export function isJSONPatchRemove (value: unknown) : value is JSONPatchRemove {
   return value && typeof value === 'object' ? value.op === 'remove' : false
 }
 
-export function isJSONPatchReplace (value) : value is JSONPatchReplace {
+export function isJSONPatchReplace (value: unknown) : value is JSONPatchReplace {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return value && typeof value === 'object' ? value.op === 'replace' : false
 }
 
-export function isJSONPatchCopy (value) : value is JSONPatchCopy {
+export function isJSONPatchCopy (value: unknown) : value is JSONPatchCopy {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return value && typeof value === 'object' ? value.op === 'copy' : false
 }
 
-export function isJSONPatchMove (value) : value is JSONPatchMove {
+export function isJSONPatchMove (value: unknown) : value is JSONPatchMove {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return value && typeof value === 'object' ? value.op === 'move' : false
 }
 
-export function isJSONPatchTest (value) : value is JSONPatchTest {
+export function isJSONPatchTest (value: unknown) : value is JSONPatchTest {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return value && typeof value === 'object' ? value.op === 'test' : false

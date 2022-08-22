@@ -8,35 +8,39 @@
  * https://www.npmjs.com/package/mutatis
  * https://github.com/mariocasciaro/object-path-immutable
  */
+import { isJSONArray, isJSONObject } from './typeguards.js'
+import type { JSONArray, JSONData, JSONObject, JSONPath } from './types'
 import { isObjectOrArray } from './utils.js'
 
 /**
  * Shallow clone of an Object, Array, or value
  * Symbols are cloned too.
- * @param {*} value
- * @return {*}
  */
-export function shallowClone (value) {
-  if (Array.isArray(value)) {
+export function shallowClone<T extends JSONData> (value: T) : T {
+  if (isJSONArray(value)) {
     // copy array items
-    const copy = value.slice()
+    const copy: JSONArray = value.slice()
 
     // copy all symbols
     Object.getOwnPropertySymbols(value).forEach(symbol => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       copy[symbol] = value[symbol]
     })
 
-    return copy
-  } else if (typeof value === 'object') {
+    return copy as T
+  } else if (isJSONObject(value)) {
     // copy object properties
-    const copy = { ...value }
+    const copy: JSONObject = { ...value }
 
     // copy all symbols
     Object.getOwnPropertySymbols(value).forEach(symbol => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       copy[symbol] = value[symbol]
     })
 
-    return copy
+    return copy as T
   } else {
     return value
   }
@@ -45,17 +49,17 @@ export function shallowClone (value) {
 /**
  * Update a value in an object in an immutable way.
  * If the value is unchanged, the original object will be returned
- * @param {Object | Array} object
- * @param {string | index} key
- * @param {*} value
- * @returns {Object | Array}
  */
-export function applyProp (object, key, value) {
+export function applyProp<T extends JSONObject | JSONArray> (object: T, key: string | number, value: JSONData) : T {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   if (object[key] === value) {
     // return original object unchanged when the new value is identical to the old one
     return object
   } else {
     const updatedObject = shallowClone(object)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     updatedObject[key] = value
     return updatedObject
   }
@@ -64,18 +68,17 @@ export function applyProp (object, key, value) {
 /**
  * helper function to get a nested property in an object or array
  *
- * @param {Object | Array} object
- * @param {JSONPath} path
- * @return {* | undefined} Returns the field when found, or undefined when the
- *                         path doesn't exist
+ * @return Returns the field when found, or undefined when the path doesn't exist
  */
-export function getIn (object, path) {
-  let value = object
+export function getIn (object: JSONData, path: JSONPath) : JSONData | undefined {
+  let value: JSONData | undefined = object
   let i = 0
 
   while (i < path.length) {
-    if (isObjectOrArray(value)) {
+    if (isJSONObject(value)) {
       value = value[path[i]]
+    } else if (isJSONArray(value)) {
+      value = value[parseInt(path[i])]
     } else {
       value = undefined
     }
@@ -90,51 +93,54 @@ export function getIn (object, path) {
  * helper function to replace a nested property in an object with a new value
  * without mutating the object itself.
  *
- * @param {Object | Array} object
- * @param {JSONPath} path
- * @param {*} value
- * @param {boolean} [createPath=false]
+ * @param object
+ * @param path
+ * @param value
+ * @param [createPath=false]
  *                    If true, `path` will be created when (partly) missing in
  *                    the object. For correctly creating nested Arrays or
- *                    Objects, the function relies on `path` containing a number
+ *                    Objects, the function relies on `path` containing number
  *                    in case of array indexes.
  *                    If false (default), an error will be thrown when the
  *                    path doesn't exist.
- * @return {Object | Array} Returns a new, updated object or array
+ * @return Returns a new, updated object or array
  */
-export function setIn (object, path, value, createPath = false) {
+export function setIn (object: JSONData, path: JSONPath, value: JSONData, createPath = false) : JSONData {
   if (path.length === 0) {
     return value
   }
 
   const key = path[0]
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const updatedValue = setIn(object ? object[key] : undefined, path.slice(1), value, createPath)
 
-  if (!isObjectOrArray(object)) {
+  if (isJSONObject(object) || isJSONArray(object)) {
+    return applyProp(object, key, updatedValue)
+  } else {
     if (createPath) {
-      const newObject = typeof key === 'number'
+      const newObject = IS_INTEGER_REGEX.test(key)
         ? []
         : {}
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       newObject[key] = updatedValue
       return newObject
     } else {
       throw new Error('Path does not exist')
     }
   }
-
-  return applyProp(object, key, updatedValue)
 }
+
+const IS_INTEGER_REGEX = /^\d+$/
 
 /**
  * helper function to replace a nested property in an object with a new value
  * without mutating the object itself.
  *
- * @param {Object | Array} object
- * @param {JSONPath} path
- * @param {function} callback
- * @return {Object | Array} Returns a new, updated object or array
+ * @return  Returns a new, updated object or array
  */
-export function updateIn (object, path, callback) {
+export function updateIn (object: JSONData, path: JSONPath, callback: (value: JSONData) => JSONData) : JSONData {
   if (path.length === 0) {
     return callback(object)
   }
@@ -144,7 +150,11 @@ export function updateIn (object, path, callback) {
   }
 
   const key = path[0]
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const updatedValue = updateIn(object[key], path.slice(1), callback)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   return applyProp(object, key, updatedValue)
 }
 
@@ -152,11 +162,9 @@ export function updateIn (object, path, callback) {
  * helper function to delete a nested property in an object
  * without mutating the object itself.
  *
- * @param {Object | Array} object
- * @param {JSONPath} path
- * @return {Object | Array} Returns a new, updated object or array
+ * @return Returns a new, updated object or array
  */
-export function deleteIn (object, path) {
+export function deleteIn<T extends JSONObject | JSONArray> (object: T, path: JSONPath) : T {
   if (path.length === 0) {
     return object
   }
@@ -174,7 +182,7 @@ export function deleteIn (object, path) {
       const updatedObject = shallowClone(object)
 
       if (Array.isArray(updatedObject)) {
-        updatedObject.splice(key, 1)
+        updatedObject.splice(parseInt(key), 1)
       } else {
         delete updatedObject[key]
       }
@@ -184,7 +192,11 @@ export function deleteIn (object, path) {
   }
 
   const key = path[0]
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const updatedValue = deleteIn(object[key], path.slice(1))
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   return applyProp(object, key, updatedValue)
 }
 
@@ -193,13 +205,8 @@ export function deleteIn (object, path) {
  * Example usage:
  *
  *     insertAt({arr: [1,2,3]}, ['arr', '2'], 'inserted')  // [1,2,'inserted',3]
- *
- * @param {Object | Array} object
- * @param {JSONPath} path
- * @param {*} value
- * @return {Array}
  */
-export function insertAt (object, path, value) {
+export function insertAt (object: JSONObject | JSONArray, path: JSONPath, value: JSONData) : JSONData {
   const parentPath = path.slice(0, path.length - 1)
   const index = path[path.length - 1]
 
@@ -209,7 +216,7 @@ export function insertAt (object, path, value) {
     }
 
     const updatedItems = shallowClone(items)
-    updatedItems.splice(index, 0, value)
+    updatedItems.splice(parseInt(index), 0, value)
 
     return updatedItems
   })
@@ -218,15 +225,11 @@ export function insertAt (object, path, value) {
 /**
  * Transform a JSON object, traverse over the whole object,
  * and allow replacing Objects/Arrays/values.
- * @param {JSONData} json
- * @param {function (json: JSONData, path: JSONPath) : JSONData} callback
- * @param {JSONPath} [path]
- * @return {JSONData}
  */
-export function transform (json, callback, path = []) {
+export function transform (json: JSONData, callback: (json: JSONData, path: JSONPath) => JSONData, path: JSONPath = []) : JSONData {
   const updated1 = callback(json, path)
 
-  if (Array.isArray(json)) { // array
+  if (isJSONArray(updated1)) { // array
     let updated2
 
     for (let i = 0; i < updated1.length; i++) {
@@ -244,7 +247,7 @@ export function transform (json, callback, path = []) {
     }
 
     return updated2 || updated1
-  } else if (json && typeof json === 'object') { // object
+  } else if (isJSONObject(updated1)) { // object
     let updated2
 
     for (const key in updated1) {
@@ -268,12 +271,9 @@ export function transform (json, callback, path = []) {
 
 /**
  * Test whether a path exists in a JSON object
- * @param {JSONData} json
- * @param {JSONPath} path
- * @return {boolean} Returns true if the path exists, else returns false
- * @private
+ * @return Returns true if the path exists, else returns false
  */
-export function existsIn (json, path) {
+export function existsIn (json: JSONData, path: JSONPath) : boolean {
   if (json === undefined) {
     return false
   }
@@ -282,5 +282,7 @@ export function existsIn (json, path) {
     return true
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   return existsIn(json[path[0]], path.slice(1))
 }

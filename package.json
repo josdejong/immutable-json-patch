@@ -27,7 +27,7 @@
     "build:cjs": "babel src --out-dir lib/cjs --extensions \".ts\" --source-maps --config-file ./babel-cjs.config.json && cpy tools/cjs/package.json lib/cjs --flat",
     "build:umd": "rollup lib/esm/index.js --format umd --name 'immutableJSONPatch' --sourcemap --output.file lib/umd/immutableJSONPatch.js && cpy tools/cjs/package.json lib/umd --flat",
     "build:umd:min": "uglifyjs --compress --mangle --source-map --comments --output lib/umd/immutableJSONPatch.min.js -- lib/umd/immutableJSONPatch.js",
-    "build:types": "tsc --emitDeclarationOnly",
+    "build:types": "tsc --project tsconfig-types.json",
     "lint": "eslint src/**/*.ts",
     "build-and-test": "npm run lint && npm run build && npm run test:lib",
     "prepublishOnly": "npm run build-and-test"

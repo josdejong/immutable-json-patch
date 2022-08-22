@@ -7,10 +7,10 @@
     "esModuleInterop": true,
     "allowJs": false,
     "checkJs": false,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "declaration": true,
-    "declarationDir": "lib/types"
+    "declarationDir": "lib/types",
+    "declarationMap": true
   },
-  "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.ts"],
-  "exclude": ["src/**/*.test.ts"]
+  "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.ts"]
 }

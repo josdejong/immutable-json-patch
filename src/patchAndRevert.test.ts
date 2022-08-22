@@ -558,7 +558,7 @@ describe('immutableJSONPatch', () => {
 
   it('should check whether a path is an array item', () => {
     assert.strictEqual(isArrayItem({ a: 2 }, ['a']), false)
-    assert.strictEqual(isArrayItem([1, 2, 3], [0]), true)
+    assert.strictEqual(isArrayItem([1, 2, 3], ['0']), true)
     assert.strictEqual(isArrayItem([1, 2, 3], []), false)
   })
 

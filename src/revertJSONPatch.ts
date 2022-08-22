@@ -26,11 +26,11 @@ import { startsWith } from './utils.js'
  * @return Returns the operations to revert the changes
  */
 export function revertJSONPatch (json: JSONData, operations: JSONPatchDocument, options?: RevertJSONPatchOptions) : JSONPatchDocument {
-  let allRevertOperations = []
+  let allRevertOperations: JSONPatchDocument = []
 
   immutableJSONPatch(json, operations, {
     before: (json, operation) => {
-      let revertOperations
+      let revertOperations: JSONPatchDocument
       const path = parsePath(json, operation.path)
       if (operation.op === 'add') {
         revertOperations = revertAdd(json, path)
