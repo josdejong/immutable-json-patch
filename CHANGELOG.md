@@ -1,9 +1,12 @@
 # Changelog
 
-## not yet published, version 4.0.0
+## 2022-08-22, version 4.0.0
 
 - BREAKING: Changed the `"main"` field in `package.json` to point to
   the ES Module entry point instead of CommonJS.
+- BREAKING: Converted the source code to TypeScript. There are some subtle
+  changes in the TypeScript definitions of util functions.
+- Implemented two new typeguard functions: `isJSONObject` and `isJSONArray`.
 
 
 ## 2022-07-01, version 3.0.0
