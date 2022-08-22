@@ -1,11 +1,10 @@
+import type { JSONData } from './types'
+
 /**
  * Test deep equality of two JSON values, objects, or arrays
- * @param {JSONData} a
- * @param {JSONData} b
- * @returns {boolean}
  */
 // TODO: write unit tests
-export function isEqual (a, b) {
+export function isEqual (a: JSONData, b: JSONData) : boolean {
   // FIXME: this function will return false for two objects with the same keys
   //  but different order of keys
   return JSON.stringify(a) === JSON.stringify(b)
@@ -13,41 +12,34 @@ export function isEqual (a, b) {
 
 /**
  * Test whether two values are strictly equal
- * @param {*} a
- * @param {*} b
- * @returns {boolean}
  */
-export function strictEqual (a, b) {
+export function strictEqual (a: unknown, b: unknown) : boolean {
   return a === b
 }
 
 /**
  * Get all but the last items from an array
- * @param {Array} array
- * @return {Array}
  */
 // TODO: write unit tests
-export function initial (array) {
+export function initial<T> (array: Array<T>) : Array<T> {
   return array.slice(0, array.length - 1)
 }
 
 /**
  * Get the last item from an array
- * @param {Array} array
- * @returns {*}
  */
 // TODO: write unit tests
-export function last (array) {
+export function last<T> (array: Array<T>) : T | undefined {
   return array[array.length - 1]
 }
 
 /**
  * Test whether array1 starts with array2
- * @param {Array} array1
- * @param {Array} array2
- * @param {function} [isEqual=strictEqual] Optional function to check equality
+ * @param array1
+ * @param array2
+ * @param [isEqual] Optional function to check equality
  */
-export function startsWith (array1, array2, isEqual = strictEqual) {
+export function startsWith<T> (array1: Array<T>, array2: Array<T>, isEqual = strictEqual) : boolean {
   if (array1.length < array2.length) {
     return false
   }
@@ -63,10 +55,8 @@ export function startsWith (array1, array2, isEqual = strictEqual) {
 
 /**
  * Test whether a value is an Object or an Array (and not a primitive JSON value)
- * @param {*} value
- * @return {boolean}
  */
 // TODO: write unit tests
-export function isObjectOrArray (value) {
+export function isObjectOrArray (value: unknown) : boolean {
   return typeof value === 'object' && value !== null
 }

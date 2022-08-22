@@ -6,24 +6,26 @@ import {
   setIn
 } from './immutabilityHelpers.js'
 import { compileJSONPointer, parseJSONPointer } from './jsonPointer.js'
+import {
+  JSONData,
+  JSONPatchDocument,
+  JSONPatchOperation,
+  JSONPatchOptions
+} from './types'
 import { initial, isEqual, last } from './utils.js'
 
 /**
  * Apply a patch to a JSON object
  * The original JSON object will not be changed,
  * instead, the patch is applied in an immutable way
- * @param {JSONData} json
- * @param {JSONPatchDocument} operations    Array with JSON patch actions
- * @param {JSONPatchOptions} [options]
- * @return {JSONData} Returns the updated json
  */
-export function immutableJSONPatch (json, operations, options) {
+export function immutableJSONPatch (json: JSONData, operations: JSONPatchDocument, options?:JSONPatchOptions) {
   let updatedJson = json
 
   for (let i = 0; i < operations.length; i++) {
     validateJSONPatchOperation(operations[i])
 
-    let operation = operations[i]
+    let operation: JSONPatchOperation = operations[i]
 
     // TODO: test before
     if (options && options.before) {
@@ -53,7 +55,7 @@ export function immutableJSONPatch (json, operations, options) {
     } else if (operation.op === 'test') {
       test(updatedJson, path, operation.value)
     } else {
-      throw new Error('Unknown JSONPatch operation ' + JSON.stringify(operation.op))
+      throw new Error('Unknown JSONPatch operation ' + JSON.stringify(operation))
     }
 
     // TODO: test after

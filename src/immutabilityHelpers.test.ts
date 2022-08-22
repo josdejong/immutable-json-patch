@@ -193,7 +193,7 @@ describe('immutabilityHelpers', () => {
       d: 3
     }
 
-    const updated = updateIn(obj, ['a', 'b'], (obj) => [1, 2, 3])
+    const updated = updateIn(obj, ['a', 'b'], () => [1, 2, 3])
     assert.deepStrictEqual(updated, {
       a: {
         b: [1, 2, 3]
@@ -230,7 +230,7 @@ describe('immutabilityHelpers', () => {
       b: 3
     }
 
-    const updated = updateIn(obj, ['b'], (value) => 3)
+    const updated = updateIn(obj, ['b'], () => 3)
     assert.strictEqual(updated, obj)
   })
 
@@ -324,7 +324,7 @@ describe('immutabilityHelpers', () => {
 
   it('transform (no change)', () => {
     const json = { a: [1, 2, 3], b: { c: 4 } }
-    const updated = transform(json, (value, path) => value)
+    const updated = transform(json, (value) => value)
     assert.strictEqual(updated, json)
   })
 
@@ -332,7 +332,7 @@ describe('immutabilityHelpers', () => {
     const json = { a: [1, 2, 3], b: { c: 4 } }
 
     const updated = transform(json,
-      (value, path) => value === 2 ? 20 : value)
+      (value) => value === 2 ? 20 : value)
     const expected = { a: [1, 20, 3], b: { c: 4 } }
 
     assert.deepStrictEqual(updated, expected)

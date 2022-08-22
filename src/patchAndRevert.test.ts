@@ -1,6 +1,7 @@
 import assert from 'assert'
 import { immutableJSONPatch, isArrayItem } from './immutableJSONPatch.js'
 import { revertJSONPatch } from './revertJSONPatch.js'
+import type { JSONPatchDocument } from './types'
 
 describe('immutableJSONPatch', () => {
   it('test strictEqual, notStrictEqual, deepStrictEqual', () => {
@@ -19,7 +20,7 @@ describe('immutableJSONPatch', () => {
       obj: { a: 2 }
     }
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'add', path: '/obj/b', value: { foo: 'bar' } }
     ]
 
@@ -42,7 +43,7 @@ describe('immutableJSONPatch', () => {
       obj: { a: 2 }
     }
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'add', path: '/arr/1', value: 4 }
     ]
 
@@ -65,7 +66,7 @@ describe('immutableJSONPatch', () => {
       obj: { a: 2 }
     }
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'add', path: '/arr/-', value: 4 }
     ]
 
@@ -89,7 +90,7 @@ describe('immutableJSONPatch', () => {
       unchanged: {}
     }
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'remove', path: '/obj/a' },
       { op: 'remove', path: '/arr/1' }
     ]
@@ -119,7 +120,7 @@ describe('immutableJSONPatch', () => {
   it('jsonpatch remove multiple items from an array', () => {
     const json = [0, 1, 2, 3, 4]
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'remove', path: '/2' },
       { op: 'remove', path: '/2' },
       { op: 'remove', path: '/2' }
@@ -141,13 +142,15 @@ describe('immutableJSONPatch', () => {
 
     assert.deepStrictEqual(updatedJson2, json)
     assert.deepStrictEqual(revert2, operations)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     assert.strictEqual(updatedJson.unchanged, json.unchanged)
   })
 
   it('jsonpatch remove multiple items from an array in reverse order', () => {
     const json = [0, 1, 2, 3, 4]
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'remove', path: '/4' },
       { op: 'remove', path: '/3' },
       { op: 'remove', path: '/2' }
@@ -169,6 +172,8 @@ describe('immutableJSONPatch', () => {
 
     assert.deepStrictEqual(updatedJson2, json)
     assert.deepStrictEqual(revert2, operations)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     assert.strictEqual(updatedJson.unchanged, json.unchanged)
   })
 
@@ -179,7 +184,7 @@ describe('immutableJSONPatch', () => {
       unchanged: {}
     }
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'replace', path: '/obj/a', value: 400 },
       { op: 'replace', path: '/arr/1', value: 200 }
     ]
@@ -213,7 +218,7 @@ describe('immutableJSONPatch', () => {
     const json = {
       a: 2
     }
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'replace', path: '', value: { b: 3 } }
     ]
     const updatedJson = immutableJSONPatch(json, operations)
@@ -227,7 +232,7 @@ describe('immutableJSONPatch', () => {
       obj: { a: 4 }
     }
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'copy', from: '/obj', path: '/arr/2' }
     ]
 
@@ -260,7 +265,7 @@ describe('immutableJSONPatch', () => {
       obj: { a: 4 }
     }
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'copy', from: '/obj', path: '' }
     ]
 
@@ -289,7 +294,7 @@ describe('immutableJSONPatch', () => {
       unchanged: {}
     }
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'move', from: '/obj', path: '/arr/2' }
     ]
 
@@ -317,7 +322,7 @@ describe('immutableJSONPatch', () => {
   it('jsonpatch move down in array', () => {
     const json = ['A', 'B', 'C', 'D', 'E']
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'move', from: '/1', path: '/3' }
     ]
 
@@ -340,7 +345,7 @@ describe('immutableJSONPatch', () => {
   it('jsonpatch move up in array', () => {
     const json = ['A', 'B', 'C', 'D', 'E']
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'move', from: '/3', path: '/1' }
     ]
 
@@ -363,7 +368,7 @@ describe('immutableJSONPatch', () => {
   it('jsonpatch move and replace', () => {
     const json = { a: 2, b: 3 }
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'move', from: '/a', path: '/b' }
     ]
 
@@ -394,7 +399,7 @@ describe('immutableJSONPatch', () => {
       unchanged: {}
     }
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'move', from: '/obj', path: '/arr' }
     ]
 
@@ -430,7 +435,7 @@ describe('immutableJSONPatch', () => {
       unchanged: {}
     }
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'move', from: '/obj', path: '' }
     ]
 
@@ -455,7 +460,7 @@ describe('immutableJSONPatch', () => {
   it('jsonpatch move and replace (extract array)', () => {
     const json = [1, 2, 3]
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'move', from: '/2', path: '' }
     ]
 
@@ -483,7 +488,7 @@ describe('immutableJSONPatch', () => {
     //   obj: { a: 4 }
     // }
     //
-    // const operations = [
+    // const operations: JSONPatchDocument = [
     //   { op: 'move', from: '', path: '/obj/b' }
     // ]
     //
@@ -497,7 +502,7 @@ describe('immutableJSONPatch', () => {
       obj: { a: 4 }
     }
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'test', path: '/arr', value: [1, 2, 3] },
       { op: 'add', path: '/added', value: 'ok' }
     ]
@@ -521,7 +526,7 @@ describe('immutableJSONPatch', () => {
       obj: { a: 4 }
     }
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'test', path: '/arr/5', value: [1, 2, 3] },
       { op: 'add', path: '/added', value: 'ok' }
     ]
@@ -539,7 +544,7 @@ describe('immutableJSONPatch', () => {
       obj: { a: 4 }
     }
 
-    const operations = [
+    const operations: JSONPatchDocument = [
       { op: 'test', path: '/obj', value: { a: 4, b: 6 } },
       { op: 'add', path: '/added', value: 'ok' }
     ]

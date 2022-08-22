@@ -10,7 +10,7 @@
   "main": "lib/esm/index.js",
   "module": "lib/esm/index.js",
   "browser": "lib/umd/immutableJSONPatch.js",
-  "types": "lib/index.d.ts",
+  "types": "lib/types/index.d.ts",
   "keywords": [
     "json",
     "patch",
@@ -21,15 +21,14 @@
   "scripts": {
     "test": "mocha",
     "test:lib": "mocha test-lib/*.test.*",
-    "build": "npm run clean && npm run build:ts && npm run build:esm && npm run build:cjs && npm run build:umd && npm run build:umd:min",
+    "build": "npm run clean && npm-run-all build:**",
     "clean": "del-cli lib",
-    "build:ts": "cpy src/index.d.ts lib --flat",
-    "build:esm": "babel src --out-dir lib/esm --source-maps --config-file ./babel.config.json",
-    "build:cjs": "babel src --out-dir lib/cjs --source-maps --config-file ./babel-cjs.config.json && cpy tools/cjs/package.json lib/cjs --flat",
+    "build:esm": "babel src --out-dir lib/esm --extensions \".ts\" --source-maps --config-file ./babel.config.json",
+    "build:cjs": "babel src --out-dir lib/cjs --extensions \".ts\" --source-maps --config-file ./babel-cjs.config.json && cpy tools/cjs/package.json lib/cjs --flat",
     "build:umd": "rollup lib/esm/index.js --format umd --name 'immutableJSONPatch' --sourcemap --output.file lib/umd/immutableJSONPatch.js && cpy tools/cjs/package.json lib/umd --flat",
     "build:umd:min": "uglifyjs --compress --mangle --source-map --comments --output lib/umd/immutableJSONPatch.min.js -- lib/umd/immutableJSONPatch.js",
-    "link": "npm run build",
-    "lint": "eslint src/**/*.js",
+    "build:types": "tsc --emitDeclarationOnly",
+    "lint": "eslint src/**/*.ts",
     "build-and-test": "npm run lint && npm run build && npm run test:lib",
     "prepublishOnly": "npm run build-and-test"
   },
@@ -43,7 +42,13 @@
   "devDependencies": {
     "@babel/cli": "7.18.6",
     "@babel/core": "7.18.6",
+    "@babel/plugin-transform-typescript": "7.18.12",
     "@babel/preset-env": "7.18.6",
+    "@babel/preset-typescript": "7.18.6",
+    "@types/mocha": "9.1.1",
+    "@types/node": "18.7.8",
+    "@typescript-eslint/eslint-plugin": "5.33.1",
+    "@typescript-eslint/parser": "5.33.1",
     "cpy-cli": "4.1.0",
     "del-cli": "4.0.1",
     "eslint": "8.18.0",
@@ -53,7 +58,10 @@
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "6.0.0",
     "mocha": "10.0.0",
+    "npm-run-all": "4.1.5",
     "rollup": "2.75.7",
+    "ts-node": "10.9.1",
+    "typescript": "4.7.4",
     "uglify-js": "3.16.1"
   }
 }
