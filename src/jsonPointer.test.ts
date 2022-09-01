@@ -18,6 +18,7 @@ describe('jsonPointer', () => {
 
   it('compileJSONPointer', () => {
     assert.deepStrictEqual(compileJSONPointer(['foo', 'bar']), '/foo/bar')
+    assert.deepStrictEqual(compileJSONPointer(['foo', 'bar baz']), '/foo/bar baz')
     assert.deepStrictEqual(compileJSONPointer(['foo', '/~ ~/']), '/foo/~1~0 ~0~1')
     assert.deepStrictEqual(compileJSONPointer(['']), '/')
     assert.deepStrictEqual(compileJSONPointer([]), '')
