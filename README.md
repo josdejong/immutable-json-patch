@@ -128,16 +128,9 @@ Where:
 
 The function returns a list with the reverse JSON Patch operations. These operations can be applied to the updated JSON document (the output of `immutableJSONPatch`) to restore the original JSON document.
 
-#### type guards
-
-The library exposes the following type guards:
-
-```ts
-```
-
 #### util functions
 
-The library exposes a set of utility functions to work with JSON pointers and to do immutable operations on JSON data:
+The library exposes a set of utility functions and typeguards to work with JSON pointers and to do immutable operations on JSON data:
 
 ```ts
 declare function parsePath(json: JSONData, path: JSONPointer): JSONPath
