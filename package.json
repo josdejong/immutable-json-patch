@@ -11,6 +11,7 @@
   "module": "lib/esm/index.js",
   "browser": "lib/umd/immutableJSONPatch.js",
   "types": "lib/types/index.d.ts",
+  "sideEffects": false,
   "keywords": [
     "json",
     "patch",

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2022-08-22, version 4.0.1
+
+- Mark the package as side-effects free, allowing better optimization in 
+  bundlers.
+
+
 ## 2022-08-22, version 4.0.0
 
 - BREAKING: Changed the `"main"` field in `package.json` to point to
