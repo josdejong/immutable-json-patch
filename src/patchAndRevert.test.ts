@@ -15,7 +15,7 @@ describe('immutableJSONPatch', () => {
   })
 
   it('jsonpatch add', () => {
-    const json = {
+    const document = {
       arr: [1, 2, 3],
       obj: { a: 2 }
     }
@@ -24,21 +24,21 @@ describe('immutableJSONPatch', () => {
       { op: 'add', path: '/obj/b', value: { foo: 'bar' } }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, {
+    assert.deepStrictEqual(updatedDocument, {
       arr: [1, 2, 3],
       obj: { a: 2, b: { foo: 'bar' } }
     })
     assert.deepStrictEqual(revert, [
       { op: 'remove', path: '/obj/b' }
     ])
-    assert.strictEqual(updatedJson.arr, json.arr)
+    assert.strictEqual(updatedDocument.arr, document.arr)
   })
 
   it('jsonpatch add: insert in array', () => {
-    const json = {
+    const document = {
       arr: [1, 2, 3],
       obj: { a: 2 }
     }
@@ -47,21 +47,21 @@ describe('immutableJSONPatch', () => {
       { op: 'add', path: '/arr/1', value: 4 }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, {
+    assert.deepStrictEqual(updatedDocument, {
       arr: [1, 4, 2, 3],
       obj: { a: 2 }
     })
     assert.deepStrictEqual(revert, [
       { op: 'remove', path: '/arr/1' }
     ])
-    assert.strictEqual(updatedJson.obj, json.obj)
+    assert.strictEqual(updatedDocument.obj, document.obj)
   })
 
   it('jsonpatch add: append to array', () => {
-    const json = {
+    const document = {
       arr: [1, 2, 3],
       obj: { a: 2 }
     }
@@ -70,21 +70,21 @@ describe('immutableJSONPatch', () => {
       { op: 'add', path: '/arr/-', value: 4 }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, {
+    assert.deepStrictEqual(updatedDocument, {
       arr: [1, 2, 3, 4],
       obj: { a: 2 }
     })
     assert.deepStrictEqual(revert, [
       { op: 'remove', path: '/arr/3' }
     ])
-    assert.strictEqual(updatedJson.obj, json.obj)
+    assert.strictEqual(updatedDocument.obj, document.obj)
   })
 
   it('jsonpatch remove', () => {
-    const json = {
+    const document = {
       arr: [1, 2, 3],
       obj: { a: 4 },
       unchanged: {}
@@ -95,10 +95,10 @@ describe('immutableJSONPatch', () => {
       { op: 'remove', path: '/arr/1' }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, {
+    assert.deepStrictEqual(updatedDocument, {
       arr: [1, 3],
       obj: {},
       unchanged: {}
@@ -109,16 +109,16 @@ describe('immutableJSONPatch', () => {
     ])
 
     // test revert
-    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
-    const revert2 = revertJSONPatch(updatedJson, revert)
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    const revert2 = revertJSONPatch(updatedDocument, revert)
 
-    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, operations)
-    assert.strictEqual(updatedJson.unchanged, json.unchanged)
+    assert.strictEqual(updatedDocument.unchanged, document.unchanged)
   })
 
   it('jsonpatch remove multiple items from an array', () => {
-    const json = [0, 1, 2, 3, 4]
+    const document = [0, 1, 2, 3, 4]
 
     const operations: JSONPatchDocument = [
       { op: 'remove', path: '/2' },
@@ -126,10 +126,10 @@ describe('immutableJSONPatch', () => {
       { op: 'remove', path: '/2' }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, [0, 1])
+    assert.deepStrictEqual(updatedDocument, [0, 1])
     assert.deepStrictEqual(revert, [
       { op: 'add', path: '/2', value: 4 },
       { op: 'add', path: '/2', value: 3 },
@@ -137,18 +137,18 @@ describe('immutableJSONPatch', () => {
     ])
 
     // test revert
-    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
-    const revert2 = revertJSONPatch(updatedJson, revert)
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    const revert2 = revertJSONPatch(updatedDocument, revert)
 
-    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, operations)
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    assert.strictEqual(updatedJson.unchanged, json.unchanged)
+    assert.strictEqual(updatedDocument.unchanged, document.unchanged)
   })
 
   it('jsonpatch remove multiple items from an array in reverse order', () => {
-    const json = [0, 1, 2, 3, 4]
+    const document = [0, 1, 2, 3, 4]
 
     const operations: JSONPatchDocument = [
       { op: 'remove', path: '/4' },
@@ -156,10 +156,10 @@ describe('immutableJSONPatch', () => {
       { op: 'remove', path: '/2' }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, [0, 1])
+    assert.deepStrictEqual(updatedDocument, [0, 1])
     assert.deepStrictEqual(revert, [
       { op: 'add', path: '/2', value: 2 },
       { op: 'add', path: '/3', value: 3 },
@@ -167,18 +167,18 @@ describe('immutableJSONPatch', () => {
     ])
 
     // test revert
-    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
-    const revert2 = revertJSONPatch(updatedJson, revert)
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    const revert2 = revertJSONPatch(updatedDocument, revert)
 
-    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, operations)
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    assert.strictEqual(updatedJson.unchanged, json.unchanged)
+    assert.strictEqual(updatedDocument.unchanged, document.unchanged)
   })
 
   it('jsonpatch replace', () => {
-    const json = {
+    const document = {
       arr: [1, 2, 3],
       obj: { a: 4 },
       unchanged: {}
@@ -189,10 +189,10 @@ describe('immutableJSONPatch', () => {
       { op: 'replace', path: '/arr/1', value: 200 }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, {
+    assert.deepStrictEqual(updatedDocument, {
       arr: [1, 200, 3],
       obj: { a: 400 },
       unchanged: {}
@@ -203,31 +203,31 @@ describe('immutableJSONPatch', () => {
     ])
 
     // test revert
-    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
-    const revert2 = revertJSONPatch(updatedJson, revert)
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    const revert2 = revertJSONPatch(updatedDocument, revert)
 
-    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, [
       { op: 'replace', path: '/obj/a', value: 400 },
       { op: 'replace', path: '/arr/1', value: 200 }
     ])
-    assert.strictEqual(updatedJson.unchanged, json.unchanged)
+    assert.strictEqual(updatedDocument.unchanged, document.unchanged)
   })
 
   it('jsonpatch replace root document', () => {
-    const json = {
+    const document = {
       a: 2
     }
     const operations: JSONPatchDocument = [
       { op: 'replace', path: '', value: { b: 3 } }
     ]
-    const updatedJson = immutableJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, { b: 3 })
+    assert.deepStrictEqual(updatedDocument, { b: 3 })
   })
 
   it('jsonpatch copy', () => {
-    const json = {
+    const document = {
       arr: [1, 2, 3],
       obj: { a: 4 }
     }
@@ -236,10 +236,10 @@ describe('immutableJSONPatch', () => {
       { op: 'copy', from: '/obj', path: '/arr/2' }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, {
+    assert.deepStrictEqual(updatedDocument, {
       arr: [1, 2, { a: 4 }, 3],
       obj: { a: 4 }
     })
@@ -248,19 +248,19 @@ describe('immutableJSONPatch', () => {
     ])
 
     // test revert
-    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
-    const revert2 = revertJSONPatch(updatedJson, revert)
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    const revert2 = revertJSONPatch(updatedDocument, revert)
 
-    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, [
       { op: 'add', path: '/arr/2', value: { a: 4 } }
     ])
-    assert.strictEqual(updatedJson.obj, json.obj)
-    assert.strictEqual(updatedJson.arr[2], json.obj)
+    assert.strictEqual(updatedDocument.obj, document.obj)
+    assert.strictEqual(updatedDocument.arr[2], document.obj)
   })
 
   it('jsonpatch copy from child to parent', () => {
-    const json = {
+    const document = {
       arr: [1, 2, 3],
       obj: { a: 4 }
     }
@@ -269,26 +269,26 @@ describe('immutableJSONPatch', () => {
       { op: 'copy', from: '/obj', path: '' }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, { a: 4 })
+    assert.deepStrictEqual(updatedDocument, { a: 4 })
     assert.deepStrictEqual(revert, [
-      { op: 'replace', path: '', value: json }
+      { op: 'replace', path: '', value: document }
     ])
 
     // test revert
-    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
-    const revert2 = revertJSONPatch(updatedJson, revert)
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    const revert2 = revertJSONPatch(updatedDocument, revert)
 
-    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, [
       { op: 'replace', path: '', value: { a: 4 } }
     ])
   })
 
   it('jsonpatch move', () => {
-    const json = {
+    const document = {
       arr: [1, 2, 3],
       obj: { a: 4 },
       unchanged: {}
@@ -298,10 +298,10 @@ describe('immutableJSONPatch', () => {
       { op: 'move', from: '/obj', path: '/arr/2' }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, {
+    assert.deepStrictEqual(updatedDocument, {
       arr: [1, 2, { a: 4 }, 3],
       unchanged: {}
     })
@@ -310,82 +310,82 @@ describe('immutableJSONPatch', () => {
     ])
 
     // test revert
-    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
-    const revert2 = revertJSONPatch(updatedJson, revert)
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    const revert2 = revertJSONPatch(updatedDocument, revert)
 
-    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, operations)
-    assert.strictEqual(updatedJson.arr[2], json.obj)
-    assert.strictEqual(updatedJson.unchanged, json.unchanged)
+    assert.strictEqual(updatedDocument.arr[2], document.obj)
+    assert.strictEqual(updatedDocument.unchanged, document.unchanged)
   })
 
   it('jsonpatch move down in array', () => {
-    const json = ['A', 'B', 'C', 'D', 'E']
+    const document = ['A', 'B', 'C', 'D', 'E']
 
     const operations: JSONPatchDocument = [
       { op: 'move', from: '/1', path: '/3' }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, ['A', 'C', 'D', 'B', 'E'])
+    assert.deepStrictEqual(updatedDocument, ['A', 'C', 'D', 'B', 'E'])
     assert.deepStrictEqual(revert, [
       { op: 'move', from: '/3', path: '/1' }
     ])
 
     // test revert
-    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
-    const revert2 = revertJSONPatch(updatedJson, revert)
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    const revert2 = revertJSONPatch(updatedDocument, revert)
 
-    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, operations)
   })
 
   it('jsonpatch move up in array', () => {
-    const json = ['A', 'B', 'C', 'D', 'E']
+    const document = ['A', 'B', 'C', 'D', 'E']
 
     const operations: JSONPatchDocument = [
       { op: 'move', from: '/3', path: '/1' }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, ['A', 'D', 'B', 'C', 'E'])
+    assert.deepStrictEqual(updatedDocument, ['A', 'D', 'B', 'C', 'E'])
     assert.deepStrictEqual(revert, [
       { op: 'move', from: '/1', path: '/3' }
     ])
 
     // test revert
-    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
-    const revert2 = revertJSONPatch(updatedJson, revert)
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    const revert2 = revertJSONPatch(updatedDocument, revert)
 
-    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, operations)
   })
 
   it('jsonpatch move and replace', () => {
-    const json = { a: 2, b: 3 }
+    const document = { a: 2, b: 3 }
 
     const operations: JSONPatchDocument = [
       { op: 'move', from: '/a', path: '/b' }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, { b: 2 })
+    assert.deepStrictEqual(updatedDocument, { b: 2 })
     assert.deepStrictEqual(revert, [
       { op: 'move', from: '/b', path: '/a' },
       { op: 'add', path: '/b', value: 3 }
     ])
 
     // test revert
-    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
-    const revert2 = revertJSONPatch(updatedJson, revert)
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    const revert2 = revertJSONPatch(updatedDocument, revert)
 
-    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, [
       { op: 'remove', path: '/b' },
       { op: 'move', from: '/a', path: '/b' }
@@ -393,7 +393,7 @@ describe('immutableJSONPatch', () => {
   })
 
   it('jsonpatch move and replace (nested)', () => {
-    const json = {
+    const document = {
       arr: [1, 2, 3],
       obj: { a: 4 },
       unchanged: {}
@@ -403,10 +403,10 @@ describe('immutableJSONPatch', () => {
       { op: 'move', from: '/obj', path: '/arr' }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, {
+    assert.deepStrictEqual(updatedDocument, {
       arr: { a: 4 },
       unchanged: {}
     })
@@ -416,20 +416,20 @@ describe('immutableJSONPatch', () => {
     ])
 
     // test revert
-    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
-    const revert2 = revertJSONPatch(updatedJson, revert)
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    const revert2 = revertJSONPatch(updatedDocument, revert)
 
-    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, [
       { op: 'remove', path: '/arr' },
       { op: 'move', from: '/obj', path: '/arr' }
     ])
-    assert.strictEqual(updatedJson.unchanged, json.unchanged)
-    assert.strictEqual(updatedJson2.unchanged, json.unchanged)
+    assert.strictEqual(updatedDocument.unchanged, document.unchanged)
+    assert.strictEqual(updatedJson2.unchanged, document.unchanged)
   })
 
   it('jsonpatch move and replace (extract object)', () => {
-    const json = {
+    const document = {
       arr: [1, 2, 3],
       obj: { a: 4 },
       unchanged: {}
@@ -439,44 +439,44 @@ describe('immutableJSONPatch', () => {
       { op: 'move', from: '/obj', path: '' }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, { a: 4 })
+    assert.deepStrictEqual(updatedDocument, { a: 4 })
     assert.deepStrictEqual(revert, [
-      { op: 'replace', path: '', value: json }
+      { op: 'replace', path: '', value: document }
     ])
 
     // test revert
-    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
-    const revert2 = revertJSONPatch(updatedJson, revert)
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    const revert2 = revertJSONPatch(updatedDocument, revert)
 
-    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, [
       { op: 'replace', path: '', value: { a: 4 } }
     ])
   })
 
   it('jsonpatch move and replace (extract array)', () => {
-    const json = [1, 2, 3]
+    const document = [1, 2, 3]
 
     const operations: JSONPatchDocument = [
       { op: 'move', from: '/2', path: '' }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, 3)
+    assert.deepStrictEqual(updatedDocument, 3)
     assert.deepStrictEqual(revert, [
-      { op: 'replace', path: '', value: json }
+      { op: 'replace', path: '', value: document }
     ])
 
     // test revert
-    const updatedJson2 = immutableJSONPatch(updatedJson, revert)
-    const revert2 = revertJSONPatch(updatedJson, revert)
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    const revert2 = revertJSONPatch(updatedDocument, revert)
 
-    assert.deepStrictEqual(updatedJson2, json)
+    assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, [
       { op: 'replace', path: '', value: 3 }
     ])
@@ -484,7 +484,7 @@ describe('immutableJSONPatch', () => {
 
   // TODO: make robust against this
   it.skip('jsonpatch should throw an error when moving parent to child', () => {
-    // const json = {
+    // const document = {
     //   obj: { a: 4 }
     // }
     //
@@ -492,12 +492,12 @@ describe('immutableJSONPatch', () => {
     //   { op: 'move', from: '', path: '/obj/b' }
     // ]
     //
-    // const updatedJson = immutableJSONPatch(json, operations)
-    // const revert = revertJSONPatch(json, operations)
+    // const updatedDocument = immutableJSONPatch(document, operations)
+    // const revert = revertJSONPatch(document, operations)
   })
 
   it('jsonpatch test (ok)', () => {
-    const json = {
+    const document = {
       arr: [1, 2, 3],
       obj: { a: 4 }
     }
@@ -507,10 +507,10 @@ describe('immutableJSONPatch', () => {
       { op: 'add', path: '/added', value: 'ok' }
     ]
 
-    const updatedJson = immutableJSONPatch(json, operations)
-    const revert = revertJSONPatch(json, operations)
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
 
-    assert.deepStrictEqual(updatedJson, {
+    assert.deepStrictEqual(updatedDocument, {
       arr: [1, 2, 3],
       obj: { a: 4 },
       added: 'ok'
@@ -521,7 +521,7 @@ describe('immutableJSONPatch', () => {
   })
 
   it('jsonpatch test (fail: path not found)', () => {
-    const json = {
+    const document = {
       arr: [1, 2, 3],
       obj: { a: 4 }
     }
@@ -531,15 +531,15 @@ describe('immutableJSONPatch', () => {
       { op: 'add', path: '/added', value: 'ok' }
     ]
 
-    assert.throws(() => revertJSONPatch(json, operations),
+    assert.throws(() => revertJSONPatch(document, operations),
       new Error('Test failed: path not found (path: "/arr/5")'))
 
-    assert.throws(() => immutableJSONPatch(json, operations),
+    assert.throws(() => immutableJSONPatch(document, operations),
       new Error('Test failed: path not found (path: "/arr/5")'))
   })
 
   it('jsonpatch test (fail: value not equal)', () => {
-    const json = {
+    const document = {
       arr: [1, 2, 3],
       obj: { a: 4 }
     }
@@ -549,10 +549,10 @@ describe('immutableJSONPatch', () => {
       { op: 'add', path: '/added', value: 'ok' }
     ]
 
-    assert.throws(() => revertJSONPatch(json, operations),
+    assert.throws(() => revertJSONPatch(document, operations),
       new Error('Test failed, value differs (path: "/obj")'))
 
-    assert.throws(() => immutableJSONPatch(json, operations),
+    assert.throws(() => immutableJSONPatch(document, operations),
       new Error('Test failed, value differs (path: "/obj")'))
   })
 

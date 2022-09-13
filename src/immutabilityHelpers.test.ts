@@ -8,7 +8,7 @@ import {
   transform,
   updateIn
 } from './immutabilityHelpers.js'
-import { JSONData } from './types'
+import { JSONValue } from './types'
 
 describe('immutabilityHelpers', () => {
   it('getIn', () => {
@@ -89,12 +89,12 @@ describe('immutabilityHelpers', () => {
   it('setIn non existing path with createPath=true and nested array', () => {
     const obj = {}
 
-    const expected: JSONData = {
+    const expected: JSONValue = {
       a: []
     }
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    expected.a[2] = ({ c: 4 } as JSONData)
+    expected.a[2] = ({ c: 4 } as JSONValue)
 
     assert.deepStrictEqual(setIn(obj, ['a', '2', 'c'], 4, true), expected)
     assert.deepStrictEqual(obj, {})
@@ -330,35 +330,35 @@ describe('immutabilityHelpers', () => {
   })
 
   it('transform (no change)', () => {
-    const json = { a: [1, 2, 3], b: { c: 4 } }
-    const updated = transform(json, (value) => value)
-    assert.strictEqual(updated, json)
+    const document = { a: [1, 2, 3], b: { c: 4 } }
+    const updated = transform(document, (value) => value)
+    assert.strictEqual(updated, document)
   })
 
   it('transform (change based on value)', () => {
-    const json = { a: [1, 2, 3], b: { c: 4 } }
+    const document = { a: [1, 2, 3], b: { c: 4 } }
 
-    const updated = transform(json,
+    const updated = transform(document,
       (value) => value === 2 ? 20 : value)
     const expected = { a: [1, 20, 3], b: { c: 4 } }
 
     assert.deepStrictEqual(updated, expected)
-    assert.strictEqual(updated.b, json.b) // should not have replaced b
+    assert.strictEqual(updated.b, document.b) // should not have replaced b
   })
 
   it('transform (change based on path)', () => {
-    const json = { a: [1, 2, 3], b: { c: 4 } }
+    const document = { a: [1, 2, 3], b: { c: 4 } }
 
-    const updated = transform(json,
+    const updated = transform(document,
       (value, path) => path.join('.') === 'a.1' ? 20 : value)
     const expected = { a: [1, 20, 3], b: { c: 4 } }
 
     assert.deepStrictEqual(updated, expected)
-    assert.strictEqual(updated.b, json.b) // should not have replaced b
+    assert.strictEqual(updated.b, document.b) // should not have replaced b
   })
 
   it('existsIn', () => {
-    const json = {
+    const document = {
       obj: {
         arr: [1, 2, { first: 3, last: 4 }]
       },
@@ -369,10 +369,10 @@ describe('immutabilityHelpers', () => {
       bool: false
     }
 
-    assert.deepStrictEqual(existsIn(json, ['obj', 'arr', '2', 'first']), true)
-    assert.deepStrictEqual(existsIn(json, ['obj', 'foo']), false)
-    assert.deepStrictEqual(existsIn(json, ['obj', 'foo', 'bar']), false)
-    assert.deepStrictEqual(existsIn(json, []), true)
+    assert.deepStrictEqual(existsIn(document, ['obj', 'arr', '2', 'first']), true)
+    assert.deepStrictEqual(existsIn(document, ['obj', 'foo']), false)
+    assert.deepStrictEqual(existsIn(document, ['obj', 'foo', 'bar']), false)
+    assert.deepStrictEqual(existsIn(document, []), true)
   })
 
   it('existsIn should find symbols', () => {

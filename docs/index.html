@@ -50,13 +50,13 @@
 
     function applyPatch () {
       try {
-        const json = JSON.parse(jsonText.value)
+        const document = JSON.parse(jsonText.value)
         const operations = JSON.parse(operationsText.value)
 
-        const updatedJson = immutableJSONPatch(json, operations)
-        const reverseOperations = revertJSONPatch(json, operations)
+        const updatedDocument = immutableJSONPatch(document, operations)
+        const reverseOperations = revertJSONPatch(document, operations)
 
-        updatedJsonText.value = JSON.stringify(updatedJson, null, 2)
+        updatedJsonText.value = JSON.stringify(updatedDocument, null, 2)
         reverseOperationsText.value = JSON.stringify(reverseOperations, null, 2)
         updatedJsonText.classList.remove('error')
       } catch (err) {

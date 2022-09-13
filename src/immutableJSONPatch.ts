@@ -8,7 +8,7 @@ import {
 import { compileJSONPointer, parseJSONPointer } from './jsonPointer.js'
 import {
   JSONArray,
-  JSONData,
+  JSONValue,
   JSONObject,
   JSONPatchDocument,
   JSONPatchOperation,
@@ -23,8 +23,8 @@ import { initial, isEqual, last } from './utils.js'
  * The original JSON object will not be changed,
  * instead, the patch is applied in an immutable way
  */
-export function immutableJSONPatch (json: JSONData, operations: JSONPatchDocument, options?:JSONPatchOptions) : JSONData {
-  let updatedJson = json
+export function immutableJSONPatch (document: JSONValue, operations: JSONPatchDocument, options?:JSONPatchOptions) : JSONValue {
+  let updatedDocument = document
 
   for (let i = 0; i < operations.length; i++) {
     validateJSONPatchOperation(operations[i])
@@ -33,10 +33,16 @@ export function immutableJSONPatch (json: JSONData, operations: JSONPatchDocumen
 
     // TODO: test before
     if (options && options.before) {
-      const result = options.before(updatedJson, operation)
+      const result = options.before(updatedDocument, operation)
       if (result !== undefined) {
+        if (result.document !== undefined) {
+          updatedDocument = result.document
+        }
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         if (result.json !== undefined) {
-          updatedJson = result.json
+          // TODO: deprecated since v5.0.0. Cleanup this warning some day
+          throw new Error('Deprecation warning: returned object property ".json" has been renamed to ".document"')
         }
         if (result.operation !== undefined) {
           operation = result.operation
@@ -44,84 +50,84 @@ export function immutableJSONPatch (json: JSONData, operations: JSONPatchDocumen
       }
     }
 
-    const previousJson = updatedJson
-    const path = parsePath(updatedJson, operation.path)
+    const previousDocument = updatedDocument
+    const path = parsePath(updatedDocument, operation.path)
     if (operation.op === 'add') {
-      updatedJson = add(updatedJson, path, operation.value)
+      updatedDocument = add(updatedDocument, path, operation.value)
     } else if (operation.op === 'remove') {
-      updatedJson = remove(updatedJson as JSONObject | JSONArray, path)
+      updatedDocument = remove(updatedDocument as JSONObject | JSONArray, path)
     } else if (operation.op === 'replace') {
-      updatedJson = replace(updatedJson, path, operation.value)
+      updatedDocument = replace(updatedDocument, path, operation.value)
     } else if (operation.op === 'copy') {
-      updatedJson = copy(updatedJson, path, parseFrom(operation.from))
+      updatedDocument = copy(updatedDocument, path, parseFrom(operation.from))
     } else if (operation.op === 'move') {
-      updatedJson = move(updatedJson, path, parseFrom(operation.from))
+      updatedDocument = move(updatedDocument, path, parseFrom(operation.from))
     } else if (operation.op === 'test') {
-      test(updatedJson, path, operation.value)
+      test(updatedDocument, path, operation.value)
     } else {
       throw new Error('Unknown JSONPatch operation ' + JSON.stringify(operation))
     }
 
     // TODO: test after
     if (options && options.after) {
-      const result = options.after(updatedJson, operation, previousJson)
+      const result = options.after(updatedDocument, operation, previousDocument)
       if (result !== undefined) {
-        updatedJson = result
+        updatedDocument = result
       }
     }
   }
 
-  return updatedJson
+  return updatedDocument
 }
 
 /**
  * Replace an existing item
  */
-export function replace (json: JSONData, path: JSONPath, value: JSONData) : JSONData {
-  return setIn(json, path, value)
+export function replace (document: JSONValue, path: JSONPath, value: JSONValue) : JSONValue {
+  return setIn(document, path, value)
 }
 
 /**
  * Remove an item or property
  */
-export function remove<T extends JSONArray | JSONObject> (json: T, path: JSONPath) : T {
-  return deleteIn(json, path)
+export function remove<T extends JSONArray | JSONObject> (document: T, path: JSONPath) : T {
+  return deleteIn(document, path)
 }
 
 /**
  * Add an item or property
  */
-export function add (json: JSONData, path: JSONPath, value: JSONData) : JSONData {
-  if (isArrayItem(json, path)) {
-    return insertAt(json, path, value)
+export function add (document: JSONValue, path: JSONPath, value: JSONValue) : JSONValue {
+  if (isArrayItem(document, path)) {
+    return insertAt(document, path, value)
   } else {
-    return setIn(json, path, value)
+    return setIn(document, path, value)
   }
 }
 
 /**
  * Copy a value
  */
-export function copy (json: JSONData, path: JSONPath, from: JSONPath) : JSONData {
-  const value = getIn(json, from)
+export function copy (document: JSONValue, path: JSONPath, from: JSONPath) : JSONValue {
+  const value = getIn(document, from)
 
-  if (isArrayItem(json, path)) {
-    return insertAt(json, path, value)
+  if (isArrayItem(document, path)) {
+    return insertAt(document, path, value)
   } else {
-    const value = getIn(json, from)
+    const value = getIn(document, from)
 
-    return setIn(json, path, value)
+    return setIn(document, path, value)
   }
 }
 
 /**
  * Move a value
  */
-export function move (json: JSONData, path: JSONPath, from: JSONPath) : JSONData {
-  const value = getIn(json, from)
+export function move (document: JSONValue, path: JSONPath, from: JSONPath) : JSONValue {
+  const value = getIn(document, from)
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const removedJson = deleteIn(json, from)
+  const removedJson = deleteIn(document, from)
 
   return isArrayItem(removedJson, path)
     ? insertAt(removedJson, path, value)
@@ -132,27 +138,27 @@ export function move (json: JSONData, path: JSONPath, from: JSONPath) : JSONData
  * Test whether the data contains the provided value at the specified path.
  * Throws an error when the test fails
  */
-export function test (json: JSONData, path: JSONPath, value: JSONData) {
+export function test (document: JSONValue, path: JSONPath, value: JSONValue) {
   if (value === undefined) {
     throw new Error(`Test failed: no value provided (path: "${compileJSONPointer(path)}")`)
   }
 
-  if (!existsIn(json, path)) {
+  if (!existsIn(document, path)) {
     throw new Error(`Test failed: path not found (path: "${compileJSONPointer(path)}")`)
   }
 
-  const actualValue = getIn(json, path)
+  const actualValue = getIn(document, path)
   if (!isEqual(actualValue, value)) {
     throw new Error(`Test failed, value differs (path: "${compileJSONPointer(path)}")`)
   }
 }
 
-export function isArrayItem (json: JSONData, path: JSONPath) : json is JSONArray {
+export function isArrayItem (document: JSONValue, path: JSONPath) : document is JSONArray {
   if (path.length === 0) {
     return false
   }
 
-  const parent = getIn(json, initial(path))
+  const parent = getIn(document, initial(path))
 
   return Array.isArray(parent)
 }
@@ -161,13 +167,13 @@ export function isArrayItem (json: JSONData, path: JSONPath) : json is JSONArray
  * Resolve the path index of an array, resolves indexes '-'
  * @returns Returns the resolved path
  */
-export function resolvePathIndex (json: JSONData, path: JSONPath) : JSONPath {
+export function resolvePathIndex (document: JSONValue, path: JSONPath) : JSONPath {
   if (last(path) !== '-') {
     return path
   }
 
   const parentPath = initial(path)
-  const parent = getIn(json, parentPath)
+  const parent = getIn(document, parentPath)
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -197,8 +203,8 @@ export function validateJSONPatchOperation (operation: JSONPatchOperation) {
   }
 }
 
-export function parsePath (json: JSONData, pointer: JSONPointer) : JSONPath {
-  return resolvePathIndex(json, parseJSONPointer(pointer))
+export function parsePath (document: JSONValue, pointer: JSONPointer) : JSONPath {
+  return resolvePathIndex(document, parseJSONPointer(pointer))
 }
 
 export function parseFrom (fromPointer: JSONPointer) : JSONPath {

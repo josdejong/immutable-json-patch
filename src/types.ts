@@ -1,18 +1,23 @@
 export type JSONPointer = string // a string containing a JSONPointer like '/array/3/name'
 export type JSONPath = string[] // an array like ['array', '3', 'name']
 
-export type JSONValue = string | number | boolean | null
-export type JSONData =
-  | { [key: string]: JSONData } // object
-  | JSONData[] // array
-  | JSONValue // value
-export type JSONObject = { [key: string]: JSONData }
-export type JSONArray = JSONData[]
+export type JSONPrimitive = string | number | boolean | null
+export type JSONValue =
+  | { [key: string]: JSONValue } // object
+  | JSONValue[] // array
+  | JSONPrimitive // value
+export type JSONObject = { [key: string]: JSONValue }
+export type JSONArray = JSONValue[]
+
+/**
+ * @deprecated JSONData has been renamed to JSONValue since v5.0.0
+ */
+export type JSONData = JSONValue
 
 export interface JSONPatchAdd {
   op: 'add'
   path: JSONPointer
-  value: JSONData
+  value: JSONValue
 }
 
 export interface JSONPatchRemove {
@@ -23,7 +28,7 @@ export interface JSONPatchRemove {
 export interface JSONPatchReplace {
   op: 'replace'
   path: JSONPointer
-  value: JSONData
+  value: JSONValue
 }
 
 export interface JSONPatchCopy {
@@ -41,7 +46,7 @@ export interface JSONPatchMove {
 export interface JSONPatchTest {
   op: 'test'
   path: JSONPointer
-  value: JSONData
+  value: JSONValue
 }
 
 export type JSONPatchOperation =
@@ -55,14 +60,14 @@ export type JSONPatchOperation =
 export type JSONPatchDocument = JSONPatchOperation[]
 
 export type JSONPatchOptions = {
-  before?: (json: JSONData, operation: JSONPatchOperation)
-    => { json?: JSONData, operation?: JSONPatchOperation }
+  before?: (document: JSONValue, operation: JSONPatchOperation)
+    => { document?: JSONValue, operation?: JSONPatchOperation }
 
-  after?: (json: JSONData, operation: JSONPatchOperation, previousJson: JSONData)
-    => JSONData
+  after?: (document: JSONValue, operation: JSONPatchOperation, previousDocument: JSONValue)
+    => JSONValue
 }
 
 export type RevertJSONPatchOptions = {
-  before?: (json: JSONData, operation: JSONPatchOperation, revertOperations: JSONPatchOperation[])
-    => { json?: JSONData, revertOperations?: JSONPatchOperation[] }
+  before?: (document: JSONValue, operation: JSONPatchOperation, revertOperations: JSONPatchOperation[])
+    => { document?: JSONValue, revertOperations?: JSONPatchOperation[] }
 }

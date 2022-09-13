@@ -4,11 +4,11 @@
 
 import { immutableJSONPatch, revertJSONPatch } from './lib/esm/index.js'
 
-const json = {
+const document = {
   baz: 'qux',
   foo: 'bar'
 }
-console.log('json', json)
+console.log('document', document)
 
 const operations = [
   { op: 'replace', path: '/baz', value: 'boo' },
@@ -17,24 +17,24 @@ const operations = [
 ]
 console.log('operations', operations)
 
-const updatedJson = immutableJSONPatch(json, operations)
-console.log('updated json', updatedJson)
-// updatedJson = {
+const updatedDocument = immutableJSONPatch(document, operations)
+console.log('updatedDocument', updatedDocument)
+// updatedDocument = {
 //   "baz": "boo",
 //   "hello": ["world"]
 // }
 
-const reverseOperations = revertJSONPatch(json, operations)
-console.log('reverse operations', reverseOperations)
+const reverseOperations = revertJSONPatch(document, operations)
+console.log('reverseOperations', reverseOperations)
 // reverseOperations = [
 //   { op: 'add', path: '/foo', value: 'bar' },
 //   { op: 'remove', path: '/hello' },
 //   { op: 'replace', path: '/baz', value: 'qux' }
 // ]
 
-const revertedJson = immutableJSONPatch(updatedJson, reverseOperations)
-console.log('reverted json', revertedJson)
-// revertedJson = {
+const revertedDocument = immutableJSONPatch(updatedDocument, reverseOperations)
+console.log('revertedDocument', revertedDocument)
+// revertedDocument = {
 //   "baz": "qux",
 //   "foo": "bar"
 // }
