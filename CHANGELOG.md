@@ -1,5 +1,14 @@
 # Changelog
 
+## 2022-09-13, version 5.0.0
+
+- BREAKING: Type `JSONData` has been renamed to `JSONValue`.
+- BREAKING: The optional property `json` in the returned objects from callbacks 
+  `JSONPatchOperations.before` and `RevertJSONPatchOptions.before` has been
+  renamed to `document`.
+- Fixed `isJSONObject` returning true for class instances.
+
+
 ## 2022-08-22, version 4.0.1
 
 - Mark the package as side-effects free, allowing better optimization in 
