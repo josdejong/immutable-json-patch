@@ -14,7 +14,11 @@ export function isJSONArray (value: unknown) : value is JSONArray {
 }
 
 export function isJSONObject (value: unknown) : value is JSONObject {
-  return value !== null && typeof value === 'object' && !Array.isArray(value)
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    value.constructor === Object // do not match on classes or Array
+  )
 }
 
 export function isJSONPatchOperation (value: unknown) : value is JSONPatchOperation {

@@ -1,5 +1,7 @@
 import { strictEqual } from 'assert'
 import {
+  isJSONArray,
+  isJSONObject,
   isJSONPatchAdd,
   isJSONPatchCopy,
   isJSONPatchMove,
@@ -60,5 +62,31 @@ describe('typeguards', () => {
     it(`isJSONPatchTest should return ${test} for value ${valueStr}`, () => {
       strictEqual(isJSONPatchTest(value), test)
     })
+  })
+
+  class CustomClass {}
+
+  it('isJSONObject should return true for plain objects only', () => {
+    strictEqual(isJSONObject({}), true)
+
+    strictEqual(isJSONObject(true), false)
+    strictEqual(isJSONObject(123), false)
+    strictEqual(isJSONObject(new Date()), false)
+    strictEqual(isJSONObject([]), false)
+    strictEqual(isJSONObject(null), false)
+    strictEqual(isJSONObject(undefined), false)
+    strictEqual(isJSONObject(new CustomClass()), false)
+  })
+
+  it('isJSONArray should return true for arrays only', () => {
+    strictEqual(isJSONArray([]), true)
+
+    strictEqual(isJSONArray(true), false)
+    strictEqual(isJSONArray(123), false)
+    strictEqual(isJSONArray(new Date()), false)
+    strictEqual(isJSONArray({}), false)
+    strictEqual(isJSONArray(null), false)
+    strictEqual(isJSONArray(undefined), false)
+    strictEqual(isJSONArray(new CustomClass()), false)
   })
 })
