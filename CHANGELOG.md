@@ -1,5 +1,10 @@
 # Changelog
 
+## 2022-09-28, version 5.1.0
+
+- Exports a new utility function `transform`.
+
+
 ## 2022-09-13, version 5.0.0
 
 - BREAKING: Type `JSONData` has been renamed to `JSONValue`.
