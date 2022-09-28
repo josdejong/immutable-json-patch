@@ -156,6 +156,7 @@ declare function updateIn(document: JSONValue, path: JSONPath, callback: (value:
 declare function deleteIn(document: JSONValue, path: JSONPath) : JSONValue
 declare function existsIn(document: JSONValue, path: JSONPath) : boolean
 declare function insertAt(document: JSONValue, path: JSONPath, value: JSONValue) : JSONValue
+declare function transform (document: JSONValue, callback: (document: JSONValue, path: JSONPath) => JSONValue, path: JSONPath = []) : JSONValue
 ```
 
 ### Develop

@@ -13,5 +13,6 @@ export {
   existsIn,
   insertAt,
   deleteIn,
-  updateIn
+  updateIn,
+  transform
 } from './immutabilityHelpers.js'
