@@ -1,5 +1,10 @@
 # Changelog
 
+## 2022-11-17, version 5.1.1
+
+- Fix helper function `existsIn` not handling recursive paths containing `null`.
+
+
 ## 2022-09-28, version 5.1.0
 
 - Exports a new utility function `transform`.
