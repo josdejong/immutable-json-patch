@@ -282,6 +282,10 @@ export function existsIn (document: JSONValue, path: JSONPath) : boolean {
     return true
   }
 
+  if (document === null) {
+    return false
+  }
+
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return existsIn(document[path[0]], path.slice(1))

@@ -34,6 +34,13 @@ describe('immutabilityHelpers', () => {
     assert.deepStrictEqual(getIn(obj, ['non', 'existing', 'path']), undefined)
   })
 
+  it('getIn in should handle null', () => {
+    const document = [1, 2, 3, null]
+
+    assert.deepStrictEqual(getIn(document, ['3']), null)
+    assert.deepStrictEqual(getIn(document, ['3', 'prop']), undefined)
+  })
+
   it('setIn basic', () => {
     const obj = {
       a: {
@@ -373,6 +380,13 @@ describe('immutabilityHelpers', () => {
     assert.deepStrictEqual(existsIn(document, ['obj', 'foo']), false)
     assert.deepStrictEqual(existsIn(document, ['obj', 'foo', 'bar']), false)
     assert.deepStrictEqual(existsIn(document, []), true)
+  })
+
+  it('exists in should handle null', () => {
+    const document = [1, 2, 3, null]
+
+    assert.deepStrictEqual(existsIn(document, ['3']), true)
+    assert.deepStrictEqual(existsIn(document, ['3', 'prop']), false)
   })
 
   it('existsIn should find symbols', () => {
