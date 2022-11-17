@@ -175,7 +175,7 @@ export function deleteIn<T extends JSONValue> (object: T, path: JSONPath) : T {
 
   if (path.length === 1) {
     const key = path[0]
-    if (!(key in object)) {
+    if (!(key in (object as object))) {
       // key doesn't exist. return object unchanged
       return object
     } else {
