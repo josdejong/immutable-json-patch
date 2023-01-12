@@ -1,5 +1,10 @@
 # Changelog
 
+## 2023-01-12, version 5.1.2
+
+- Add `exports` object to package.json to improve support different bundlers.
+
+
 ## 2022-11-17, version 5.1.1
 
 - Fix helper function `existsIn` not handling recursive paths containing `null`.
