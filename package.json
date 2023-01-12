@@ -11,6 +11,14 @@
   "module": "lib/esm/index.js",
   "browser": "lib/umd/immutableJSONPatch.js",
   "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/umd/immutableJSONPatch.js",
+      "browser": "./lib/umd/immutableJSONPatch.js",
+      "types": "./lib/types/index.d.ts"
+    }
+  },
   "sideEffects": false,
   "keywords": [
     "json",
