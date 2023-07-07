@@ -29,7 +29,6 @@
   ],
   "scripts": {
     "test": "mocha",
-    "test:lib": "mocha test-lib/*.test.*",
     "build": "npm run clean && npm-run-all build:**",
     "clean": "del-cli lib",
     "build:esm": "babel src --out-dir lib/esm --extensions \".ts\" --source-maps --config-file ./babel.config.json",
@@ -37,8 +36,9 @@
     "build:umd": "rollup lib/esm/index.js --format umd --name immutableJSONPatch --sourcemap --output.file lib/umd/immutableJSONPatch.js && cpy tools/cjs/package.json lib/umd --flat",
     "build:umd:min": "uglifyjs --compress --mangle --source-map --comments --output lib/umd/immutableJSONPatch.min.js -- lib/umd/immutableJSONPatch.js",
     "build:types": "tsc --project tsconfig-types.json",
+    "build:test": "mocha test-lib/*.test.*",
     "lint": "eslint src/**/*.ts",
-    "build-and-test": "npm run lint && npm run build && npm run test:lib",
+    "build-and-test": "npm run lint && npm run build",
     "prepublishOnly": "npm run build-and-test"
   },
   "files": [
