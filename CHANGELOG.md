@@ -1,5 +1,10 @@
 # Changelog
 
+## 2023-07-07, version 5.1.3
+
+- Fix #2: the `main` field not pointing to the CommonJS version of the library.
+
+
 ## 2023-01-12, version 5.1.2
 
 - Add `exports` object to package.json to improve support different bundlers.
