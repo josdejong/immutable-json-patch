@@ -3,6 +3,7 @@
 ## 2023-07-07, version 5.1.3
 
 - Fix #2: the `main` field not pointing to the CommonJS version of the library.
+- Fix UMD export not correctly exporting to `window.immutableJSONPatch` in the browser.
 
 
 ## 2023-01-12, version 5.1.2
