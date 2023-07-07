@@ -4,6 +4,7 @@
 
 - Fix #2: the `main` field not pointing to the CommonJS version of the library.
 - Fix UMD export not correctly exporting to `window.immutableJSONPatch` in the browser.
+- Drop official support for Nodejs 14.
 
 
 ## 2023-01-12, version 5.1.2
