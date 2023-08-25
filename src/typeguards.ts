@@ -1,5 +1,4 @@
 import {
-  JSONArray, JSONObject,
   JSONPatchAdd,
   JSONPatchCopy,
   JSONPatchMove,
@@ -9,11 +8,11 @@ import {
   JSONPatchTest
 } from './types'
 
-export function isJSONArray (value: unknown) : value is JSONArray {
+export function isJSONArray (value: unknown) : value is Array<unknown> {
   return Array.isArray(value)
 }
 
-export function isJSONObject (value: unknown) : value is JSONObject {
+export function isJSONObject (value: unknown) : value is Record<string, unknown> {
   return (
     value !== null &&
     typeof value === 'object' &&

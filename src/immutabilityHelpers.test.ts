@@ -8,7 +8,7 @@ import {
   transform,
   updateIn
 } from './immutabilityHelpers.js'
-import { JSONValue } from './types'
+import { expectTypeOf } from 'expect-type'
 
 describe('immutabilityHelpers', () => {
   it('getIn', () => {
@@ -96,12 +96,11 @@ describe('immutabilityHelpers', () => {
   it('setIn non existing path with createPath=true and nested array', () => {
     const obj = {}
 
-    const expected: JSONValue = {
+    const expected: { a: Record<string, number>[] } = {
       a: []
     }
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    expected.a[2] = ({ c: 4 } as JSONValue)
+
+    expected.a[2] = ({ c: 4 })
 
     assert.deepStrictEqual(setIn(obj, ['a', '2', 'c'], 4, true), expected)
     assert.deepStrictEqual(obj, {})
@@ -158,6 +157,24 @@ describe('immutabilityHelpers', () => {
     const updated = setIn(obj, ['b', 'c'], 2)
 
     assert.strictEqual(updated, obj)
+  })
+
+  it('setIn with types', () => {
+    interface UserWithoutId {
+      name: string
+    }
+
+    interface User {
+      id: string
+      name: string
+    }
+
+    const newUser: UserWithoutId = { name: 'Joe' }
+    const user: User = setIn(newUser, ['id'], '1234')
+    assert.deepStrictEqual(user, { name: 'Joe', id: '1234' })
+    expectTypeOf(setIn<User>(newUser, ['id'], '1234')).toMatchTypeOf<User>()
+    expectTypeOf(setIn<User, UserWithoutId>(newUser, ['id'], '1234')).toMatchTypeOf<User>()
+    expectTypeOf(setIn<User, UserWithoutId, string>(newUser, ['id'], '1234')).toMatchTypeOf<User>()
   })
 
   it('updateIn', () => {

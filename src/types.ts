@@ -9,15 +9,10 @@ export type JSONValue =
 export type JSONObject = { [key: string]: JSONValue }
 export type JSONArray = JSONValue[]
 
-/**
- * @deprecated JSONData has been renamed to JSONValue since v5.0.0
- */
-export type JSONData = JSONValue
-
 export interface JSONPatchAdd {
   op: 'add'
   path: JSONPointer
-  value: JSONValue
+  value: unknown
 }
 
 export interface JSONPatchRemove {
@@ -28,7 +23,7 @@ export interface JSONPatchRemove {
 export interface JSONPatchReplace {
   op: 'replace'
   path: JSONPointer
-  value: JSONValue
+  value: unknown
 }
 
 export interface JSONPatchCopy {
@@ -46,7 +41,7 @@ export interface JSONPatchMove {
 export interface JSONPatchTest {
   op: 'test'
   path: JSONPointer
-  value: JSONValue
+  value: unknown
 }
 
 export type JSONPatchOperation =
@@ -60,14 +55,14 @@ export type JSONPatchOperation =
 export type JSONPatchDocument = JSONPatchOperation[]
 
 export type JSONPatchOptions = {
-  before?: (document: JSONValue, operation: JSONPatchOperation)
-    => { document?: JSONValue, operation?: JSONPatchOperation }
+  before?: <T, U = T>(document: T, operation: JSONPatchOperation)
+    => { document?: U, operation?: JSONPatchOperation }
 
-  after?: (document: JSONValue, operation: JSONPatchOperation, previousDocument: JSONValue)
-    => JSONValue
+  after?: <T, U, V>(document: T, operation: JSONPatchOperation, previousDocument: U)
+    => V
 }
 
 export type RevertJSONPatchOptions = {
-  before?: (document: JSONValue, operation: JSONPatchOperation, revertOperations: JSONPatchOperation[])
-    => { document?: JSONValue, revertOperations?: JSONPatchOperation[] }
+  before?: <T, U = T>(document: T, operation: JSONPatchOperation, revertOperations: JSONPatchOperation[])
+    => { document?: U, revertOperations?: JSONPatchOperation[] }
 }
