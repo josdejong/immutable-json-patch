@@ -6,10 +6,10 @@ import {
   parsePath
 } from './immutableJSONPatch.js'
 import { compileJSONPointer } from './jsonPointer.js'
-import type {
+import {
   JSONPatchAdd,
   JSONPatchDocument,
-  JSONPatchMove,
+  JSONPatchMove, JSONPatchOperation, JSONPatchOptions,
   JSONPatchRemove,
   JSONPatchReplace,
   JSONPath,
@@ -27,53 +27,52 @@ import { startsWith } from './utils.js'
 export function revertJSONPatch<T, U> (document: T, operations: JSONPatchDocument, options?: RevertJSONPatchOptions) : JSONPatchDocument {
   let allRevertOperations: JSONPatchDocument = []
 
-  immutableJSONPatch<U, T>(document, operations, {
-    // @ts-ignore // FIXME
-    before: (document, operation) => {
-      let revertOperations: JSONPatchDocument
-      const path = parsePath(document, operation.path)
-      if (operation.op === 'add') {
-        revertOperations = revertAdd(document, path)
-      } else if (operation.op === 'remove') {
-        revertOperations = revertRemove(document, path)
-      } else if (operation.op === 'replace') {
-        revertOperations = revertReplace(document, path)
-      } else if (operation.op === 'copy') {
-        revertOperations = revertCopy(document, path)
-      } else if (operation.op === 'move') {
-        revertOperations = revertMove(document, path, parseFrom(operation.from))
-      } else if (operation.op === 'test') {
-        revertOperations = []
-      } else {
-        throw new Error('Unknown JSONPatch operation ' + JSON.stringify(operation))
+  const before: JSONPatchOptions['before'] = <TT, UU>(document: TT, operation: JSONPatchOperation) : { document?: UU, operation?: JSONPatchOperation } => {
+    let revertOperations: JSONPatchDocument
+    const path = parsePath(document, operation.path)
+    if (operation.op === 'add') {
+      revertOperations = revertAdd(document, path)
+    } else if (operation.op === 'remove') {
+      revertOperations = revertRemove(document, path)
+    } else if (operation.op === 'replace') {
+      revertOperations = revertReplace(document, path)
+    } else if (operation.op === 'copy') {
+      revertOperations = revertCopy(document, path)
+    } else if (operation.op === 'move') {
+      revertOperations = revertMove(document, path, parseFrom(operation.from))
+    } else if (operation.op === 'test') {
+      revertOperations = []
+    } else {
+      throw new Error('Unknown JSONPatch operation ' + JSON.stringify(operation))
+    }
+
+    let updatedJson: UU
+    if (options && options.before) {
+      const res = options.before(document, operation, revertOperations)
+      if (res && res.revertOperations) {
+        revertOperations = res.revertOperations
       }
-
-      let updatedJson: U
-      if (options && options.before) {
-        const res = options.before(document, operation, revertOperations)
-        if (res && res.revertOperations) {
-          revertOperations = res.revertOperations
-        }
-        if (res && res.document) {
-          updatedJson = res.document as unknown as U
-        }
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        if (res && res.json) {
-          // TODO: deprecated since v5.0.0. Cleanup this warning some day
-          throw new Error('Deprecation warning: returned object property ".json" has been renamed to ".document"')
-        }
+      if (res && res.document) {
+        updatedJson = res.document as unknown as UU
       }
-
-      allRevertOperations = revertOperations.concat(allRevertOperations)
-
-      if (updatedJson !== undefined) {
-        return {
-          document: updatedJson
-        }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (res && res.json) {
+        // TODO: deprecated since v5.0.0. Cleanup this warning some day
+        throw new Error('Deprecation warning: returned object property ".json" has been renamed to ".document"')
       }
     }
-  })
+
+    allRevertOperations = revertOperations.concat(allRevertOperations)
+
+    if (updatedJson !== undefined) {
+      return {
+        document: updatedJson
+      }
+    }
+  }
+
+  immutableJSONPatch<U, T>(document, operations, { before })
 
   return allRevertOperations
 }

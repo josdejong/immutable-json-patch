@@ -33,7 +33,7 @@ export function immutableJSONPatch<T, U> (document: U, operations: JSONPatchDocu
       const result = options.before(updatedDocument, operation)
       if (result !== undefined) {
         if (result.document !== undefined) {
-          updatedDocument = result.document
+          updatedDocument = result.document as T
         }
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore

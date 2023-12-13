@@ -84,6 +84,8 @@ console.log('revertedDocument', revertedJsonrevertedDocument)
 
 #### immutableJSONPatch(document, operations [, options]) => updatedDocument
 
+Apply a list with JSON Patch operations to a JSON document.
+
 ```ts
 declare function immutableJSONPatch (document: JSONValue, operations: JSONPatchDocument, options?: JSONPatchOptions) : JSONValue
 ```
@@ -92,7 +94,7 @@ Where:
 
 -   `document: JSONValue` is a JSON document
 -   `operations: JSONPatchDocument` is an array with JSONPatch operations
--   `options: JSONPatchOptions` is an optional object allowing passing hooks `before` and `after`. With those hooks it is possible to alter the JSON document and/or applied operation before and after this is applied. This allows for example to instantiate classes or special, additional data structures when applying a JSON patch operation. Or you can keep certain data stats up to date. For example, it is possible to have an array with `Customer` class instances, and instantiate a `new Customer` when an `add` operation is performed. And in this library itself, the `before` callback is used to create inverse operations whilst applying the actual operations on the document.
+-   `options: JSONPatchOptions` is an optional object allowing passing hooks `before` and `after`. With those hooks it is possible to alter the JSON document and/or applied operation before and after this is applied. This allows for example to instantiate classes or additional data structures when applying a JSON patch operation. Or you can keep certain data stats up to date. For example, it is possible to have an array with `Customer` class instances, and instantiate a `new Customer` when an `add` operation is performed. And in this library itself, the `before` callback is used to create inverse operations whilst applying the actual operations on the document.
  
     The callbacks look like:
 
@@ -115,6 +117,8 @@ Where:
 The function returns an updated JSON document where the JSON patch operations are applied. The original JSON document is not changed.
 
 #### revertJSONPatch(document, operations, options) => reverseOperations
+
+Generate the JSON patch operations that will revert the provided list with JSON Patch operations when applied to the provided JSON document.
 
 ```ts
 declare function revertJSONPatch (document: JSONValue, operations: JSONPatchDocument, options?: RevertJSONPatchOptions) : JSONPatchDocument

@@ -19,7 +19,7 @@ import { isObjectOrArray } from './utils.js'
 export function shallowClone<T> (value: T) : T {
   if (isJSONArray(value)) {
     // copy array items
-    const copy = value.slice()
+    const copy: T = value.slice() as T
 
     // copy all symbols
     Object.getOwnPropertySymbols(value).forEach(symbol => {
@@ -28,10 +28,10 @@ export function shallowClone<T> (value: T) : T {
       copy[symbol] = value[symbol]
     })
 
-    return copy as T
+    return copy
   } else if (isJSONObject(value)) {
     // copy object properties
-    const copy = { ...value }
+    const copy: T = { ...value }
 
     // copy all symbols
     Object.getOwnPropertySymbols(value).forEach(symbol => {
@@ -40,7 +40,7 @@ export function shallowClone<T> (value: T) : T {
       copy[symbol] = value[symbol]
     })
 
-    return copy as T
+    return copy
   } else {
     return value
   }
@@ -71,7 +71,7 @@ export function applyProp<T, U = unknown> (object: T, key: string | number, valu
  * @return Returns the field when found, or undefined when the path doesn't exist
  */
 export function getIn<T, U = unknown> (object: U, path: JSONPath) : T | undefined {
-  let value = object as unknown as (T | undefined)
+  let value: T | undefined = object as unknown as T
   let i = 0
 
   while (i < path.length) {
@@ -140,9 +140,9 @@ const IS_INTEGER_REGEX = /^\d+$/
  *
  * @return  Returns a new, updated object or array
  */
-export function updateIn<T, U = unknown, V = unknown> (object: T, path: JSONPath, callback: (value: U) => V) : T {
+export function updateIn<T, U = unknown, V = unknown> (object: T, path: JSONPath, transform: (value: U) => V) : T {
   if (path.length === 0) {
-    return callback(object as unknown as U) as unknown as T
+    return transform(object as unknown as U) as unknown as T
   }
 
   if (!isObjectOrArray(object)) {
@@ -152,7 +152,7 @@ export function updateIn<T, U = unknown, V = unknown> (object: T, path: JSONPath
   const key = path[0]
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const updatedValue = updateIn(object[key], path.slice(1), callback)
+  const updatedValue = updateIn(object[key], path.slice(1), transform)
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return applyProp(object, key, updatedValue)
@@ -231,7 +231,7 @@ export function transform<T, U = unknown, V = unknown, W = unknown> (document: U
   const updated1 = callback(document as unknown as V, path)
 
   if (isJSONArray(updated1)) { // array
-    let updated2
+    let updated2: unknown[] | undefined
 
     for (let i = 0; i < updated1.length; i++) {
       const before = updated1[i]
@@ -243,14 +243,13 @@ export function transform<T, U = unknown, V = unknown, W = unknown> (document: U
         if (!updated2) {
           updated2 = shallowClone(updated1)
         }
-        // @ts-ignore // FIXME
         updated2[i] = after
       }
     }
 
     return (updated2 || updated1) as T
   } else if (isJSONObject(updated1)) { // object
-    let updated2
+    let updated2: Record<string, unknown> | undefined
 
     for (const key in updated1) {
       if (Object.hasOwnProperty.call(updated1, key)) {
@@ -260,7 +259,6 @@ export function transform<T, U = unknown, V = unknown, W = unknown> (document: U
           if (!updated2) {
             updated2 = shallowClone(updated1)
           }
-          // @ts-ignore // FIXME
           updated2[key] = after
         }
       }
