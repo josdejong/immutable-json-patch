@@ -23,7 +23,7 @@ import { initial, isEqual, last } from './utils.js'
 export function immutableJSONPatch<T, U = unknown> (
   document: U,
   operations: JSONPatchDocument,
-  options?:JSONPatchOptions
+  options?: JSONPatchOptions
 ) : T {
   let updatedDocument = document as unknown as T
 
