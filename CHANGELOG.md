@@ -1,5 +1,12 @@
 # Changelog
 
+## 2023-12-13, version 6.0.0
+
+- BREAKING: deprecated the `JSONValue` type, use generics instead.
+- Implement generics, improving the TypeScript experience.
+- Drop official support for Node.js 16.
+
+
 ## 2023-07-07, version 5.1.3
 
 - Fix #2: the `main` field not pointing to the CommonJS version of the library.
