@@ -1,23 +1,10 @@
 export type JSONPointer = string // a string containing a JSONPointer like '/array/3/name'
 export type JSONPath = string[] // an array like ['array', '3', 'name']
 
-export type JSONPrimitive = string | number | boolean | null
-export type JSONValue =
-  | { [key: string]: JSONValue } // object
-  | JSONValue[] // array
-  | JSONPrimitive // value
-export type JSONObject = { [key: string]: JSONValue }
-export type JSONArray = JSONValue[]
-
-/**
- * @deprecated JSONData has been renamed to JSONValue since v5.0.0
- */
-export type JSONData = JSONValue
-
 export interface JSONPatchAdd {
   op: 'add'
   path: JSONPointer
-  value: JSONValue
+  value: unknown
 }
 
 export interface JSONPatchRemove {
@@ -28,7 +15,7 @@ export interface JSONPatchRemove {
 export interface JSONPatchReplace {
   op: 'replace'
   path: JSONPointer
-  value: JSONValue
+  value: unknown
 }
 
 export interface JSONPatchCopy {
@@ -46,7 +33,7 @@ export interface JSONPatchMove {
 export interface JSONPatchTest {
   op: 'test'
   path: JSONPointer
-  value: JSONValue
+  value: unknown
 }
 
 export type JSONPatchOperation =
@@ -59,15 +46,38 @@ export type JSONPatchOperation =
 
 export type JSONPatchDocument = JSONPatchOperation[]
 
-export type JSONPatchOptions = {
-  before?: (document: JSONValue, operation: JSONPatchOperation)
-    => { document?: JSONValue, operation?: JSONPatchOperation }
+export type JSONPatchOptions<T = unknown, U = unknown, V = unknown, W = unknown, X = unknown> = {
+  before?: (document: T, operation: JSONPatchOperation)
+    => { document?: U, operation?: JSONPatchOperation }
 
-  after?: (document: JSONValue, operation: JSONPatchOperation, previousDocument: JSONValue)
-    => JSONValue
+  after?: (document: V, operation: JSONPatchOperation, previousDocument: W)
+    => X
 }
 
-export type RevertJSONPatchOptions = {
-  before?: (document: JSONValue, operation: JSONPatchOperation, revertOperations: JSONPatchOperation[])
-    => { document?: JSONValue, revertOperations?: JSONPatchOperation[] }
+export type RevertJSONPatchOptions<T = unknown, U = unknown> = {
+  before?: (document: T, operation: JSONPatchOperation, revertOperations: JSONPatchOperation[])
+    => { document?: U, revertOperations?: JSONPatchOperation[] }
 }
+
+/**
+ * @deprecated use generics or `unknown` instead
+ */
+export type JSONPrimitive = string | number | boolean | null
+
+/**
+ * @deprecated use generics or `unknown` instead
+ */
+export type JSONValue =
+  | { [key: string]: JSONValue } // object
+  | JSONValue[] // array
+  | JSONPrimitive // value
+
+/**
+ * @deprecated use generics or `unknown` instead
+ */
+export type JSONObject = { [key: string]: JSONValue }
+
+/**
+ * @deprecated use generics or `unknown` instead
+ */
+export type JSONArray = JSONValue[]

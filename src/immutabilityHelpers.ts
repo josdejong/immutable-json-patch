@@ -9,17 +9,17 @@
  * https://github.com/mariocasciaro/object-path-immutable
  */
 import { isJSONArray, isJSONObject } from './typeguards.js'
-import type { JSONArray, JSONValue, JSONObject, JSONPath } from './types'
+import type { JSONPath } from './types'
 import { isObjectOrArray } from './utils.js'
 
 /**
  * Shallow clone of an Object, Array, or value
  * Symbols are cloned too.
  */
-export function shallowClone<T extends JSONValue> (value: T) : T {
+export function shallowClone<T> (value: T) : T {
   if (isJSONArray(value)) {
     // copy array items
-    const copy: JSONArray = value.slice()
+    const copy: T = value.slice() as T
 
     // copy all symbols
     Object.getOwnPropertySymbols(value).forEach(symbol => {
@@ -28,10 +28,10 @@ export function shallowClone<T extends JSONValue> (value: T) : T {
       copy[symbol] = value[symbol]
     })
 
-    return copy as T
+    return copy
   } else if (isJSONObject(value)) {
     // copy object properties
-    const copy: JSONObject = { ...value }
+    const copy: T = { ...value }
 
     // copy all symbols
     Object.getOwnPropertySymbols(value).forEach(symbol => {
@@ -40,7 +40,7 @@ export function shallowClone<T extends JSONValue> (value: T) : T {
       copy[symbol] = value[symbol]
     })
 
-    return copy as T
+    return copy
   } else {
     return value
   }
@@ -50,7 +50,7 @@ export function shallowClone<T extends JSONValue> (value: T) : T {
  * Update a value in an object in an immutable way.
  * If the value is unchanged, the original object will be returned
  */
-export function applyProp<T extends JSONObject | JSONArray> (object: T, key: string | number, value: JSONValue) : T {
+export function applyProp<T, U = unknown> (object: T, key: string | number, value: U) : T {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   if (object[key] === value) {
@@ -70,15 +70,15 @@ export function applyProp<T extends JSONObject | JSONArray> (object: T, key: str
  *
  * @return Returns the field when found, or undefined when the path doesn't exist
  */
-export function getIn (object: JSONValue, path: JSONPath) : JSONValue | undefined {
-  let value: JSONValue | undefined = object
+export function getIn<T, U = unknown> (object: U, path: JSONPath) : T | undefined {
+  let value: T | undefined = object as unknown as T
   let i = 0
 
   while (i < path.length) {
     if (isJSONObject(value)) {
-      value = value[path[i]]
+      value = value[path[i]] as T
     } else if (isJSONArray(value)) {
-      value = value[parseInt(path[i])]
+      value = value[parseInt(path[i])] as T
     } else {
       value = undefined
     }
@@ -105,9 +105,9 @@ export function getIn (object: JSONValue, path: JSONPath) : JSONValue | undefine
  *                    path doesn't exist.
  * @return Returns a new, updated object or array
  */
-export function setIn (object: JSONValue, path: JSONPath, value: JSONValue, createPath = false) : JSONValue {
+export function setIn<T, U = unknown, V = unknown> (object: U, path: JSONPath, value: V, createPath = false) : T {
   if (path.length === 0) {
-    return value
+    return value as unknown as T
   }
 
   const key = path[0]
@@ -116,7 +116,7 @@ export function setIn (object: JSONValue, path: JSONPath, value: JSONValue, crea
   const updatedValue = setIn(object ? object[key] : undefined, path.slice(1), value, createPath)
 
   if (isJSONObject(object) || isJSONArray(object)) {
-    return applyProp(object, key, updatedValue)
+    return applyProp(object, key, updatedValue) as T
   } else {
     if (createPath) {
       const newObject = IS_INTEGER_REGEX.test(key)
@@ -125,7 +125,7 @@ export function setIn (object: JSONValue, path: JSONPath, value: JSONValue, crea
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       newObject[key] = updatedValue
-      return newObject
+      return newObject as T
     } else {
       throw new Error('Path does not exist')
     }
@@ -140,9 +140,9 @@ const IS_INTEGER_REGEX = /^\d+$/
  *
  * @return  Returns a new, updated object or array
  */
-export function updateIn (object: JSONValue, path: JSONPath, callback: (value: JSONValue) => JSONValue) : JSONValue {
+export function updateIn<T, U = unknown, V = unknown> (object: T, path: JSONPath, transform: (value: U) => V) : T {
   if (path.length === 0) {
-    return callback(object)
+    return transform(object as unknown as U) as unknown as T
   }
 
   if (!isObjectOrArray(object)) {
@@ -152,7 +152,7 @@ export function updateIn (object: JSONValue, path: JSONPath, callback: (value: J
   const key = path[0]
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const updatedValue = updateIn(object[key], path.slice(1), callback)
+  const updatedValue = updateIn(object[key], path.slice(1), transform)
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return applyProp(object, key, updatedValue)
@@ -164,9 +164,9 @@ export function updateIn (object: JSONValue, path: JSONPath, callback: (value: J
  *
  * @return Returns a new, updated object or array
  */
-export function deleteIn<T extends JSONValue> (object: T, path: JSONPath) : T {
+export function deleteIn<T, U = unknown> (object: U, path: JSONPath) : T {
   if (path.length === 0) {
-    return object
+    return object as unknown as T
   }
 
   if (!isObjectOrArray(object)) {
@@ -177,7 +177,7 @@ export function deleteIn<T extends JSONValue> (object: T, path: JSONPath) : T {
     const key = path[0]
     if (!(key in (object as object))) {
       // key doesn't exist. return object unchanged
-      return object
+      return object as unknown as T
     } else {
       const updatedObject = shallowClone(object)
 
@@ -187,7 +187,7 @@ export function deleteIn<T extends JSONValue> (object: T, path: JSONPath) : T {
         delete updatedObject[key]
       }
 
-      return updatedObject
+      return updatedObject as unknown as T
     }
   }
 
@@ -206,7 +206,7 @@ export function deleteIn<T extends JSONValue> (object: T, path: JSONPath) : T {
  *
  *     insertAt({arr: [1,2,3]}, ['arr', '2'], 'inserted')  // [1,2,'inserted',3]
  */
-export function insertAt (document: JSONObject | JSONArray, path: JSONPath, value: JSONValue) : JSONValue {
+export function insertAt<T, U = unknown> (document: T, path: JSONPath, value: U) : T {
   const parentPath = path.slice(0, path.length - 1)
   const index = path[path.length - 1]
 
@@ -226,11 +226,12 @@ export function insertAt (document: JSONObject | JSONArray, path: JSONPath, valu
  * Transform a JSON object, traverse over the whole object,
  * and allow replacing Objects/Arrays/values.
  */
-export function transform (document: JSONValue, callback: (document: JSONValue, path: JSONPath) => JSONValue, path: JSONPath = []) : JSONValue {
-  const updated1 = callback(document, path)
+export function transform<T, U = unknown, V = unknown, W = unknown> (document: U, callback: (document: V, path: JSONPath) => W, path: JSONPath = []) : T {
+  // eslint-disable-next-line n/no-callback-literal
+  const updated1 = callback(document as unknown as V, path)
 
   if (isJSONArray(updated1)) { // array
-    let updated2
+    let updated2: unknown[] | undefined
 
     for (let i = 0; i < updated1.length; i++) {
       const before = updated1[i]
@@ -246,9 +247,9 @@ export function transform (document: JSONValue, callback: (document: JSONValue, 
       }
     }
 
-    return updated2 || updated1
+    return (updated2 || updated1) as T
   } else if (isJSONObject(updated1)) { // object
-    let updated2
+    let updated2: Record<string, unknown> | undefined
 
     for (const key in updated1) {
       if (Object.hasOwnProperty.call(updated1, key)) {
@@ -263,9 +264,9 @@ export function transform (document: JSONValue, callback: (document: JSONValue, 
       }
     }
 
-    return updated2 || updated1
+    return (updated2 || updated1) as T
   } else { // number, string, boolean, null
-    return updated1
+    return updated1 as unknown as T
   }
 }
 
@@ -273,7 +274,7 @@ export function transform (document: JSONValue, callback: (document: JSONValue, 
  * Test whether a path exists in a JSON object
  * @return Returns true if the path exists, else returns false
  */
-export function existsIn (document: JSONValue, path: JSONPath) : boolean {
+export function existsIn<T> (document: T, path: JSONPath) : boolean {
   if (document === undefined) {
     return false
   }

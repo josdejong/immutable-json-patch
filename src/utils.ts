@@ -1,10 +1,8 @@
-import type { JSONValue } from './types'
-
 /**
  * Test deep equality of two JSON values, objects, or arrays
  */
 // TODO: write unit tests
-export function isEqual (a: JSONValue, b: JSONValue) : boolean {
+export function isEqual<T, U> (a: T, b: U) : boolean {
   // FIXME: this function will return false for two objects with the same keys
   //  but different order of keys
   return JSON.stringify(a) === JSON.stringify(b)

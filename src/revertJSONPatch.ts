@@ -6,11 +6,10 @@ import {
   parsePath
 } from './immutableJSONPatch.js'
 import { compileJSONPointer } from './jsonPointer.js'
-import type {
-  JSONValue,
+import {
   JSONPatchAdd,
   JSONPatchDocument,
-  JSONPatchMove,
+  JSONPatchMove, JSONPatchOperation, JSONPatchOptions,
   JSONPatchRemove,
   JSONPatchReplace,
   JSONPath,
@@ -25,60 +24,60 @@ import { startsWith } from './utils.js'
  * @param [options]
  * @return Returns the operations to revert the changes
  */
-export function revertJSONPatch (document: JSONValue, operations: JSONPatchDocument, options?: RevertJSONPatchOptions) : JSONPatchDocument {
+export function revertJSONPatch<T, U> (document: T, operations: JSONPatchDocument, options?: RevertJSONPatchOptions) : JSONPatchDocument {
   let allRevertOperations: JSONPatchDocument = []
 
-  immutableJSONPatch(document, operations, {
-    before: (document, operation) => {
-      let revertOperations: JSONPatchDocument
-      const path = parsePath(document, operation.path)
-      if (operation.op === 'add') {
-        revertOperations = revertAdd(document, path)
-      } else if (operation.op === 'remove') {
-        revertOperations = revertRemove(document, path)
-      } else if (operation.op === 'replace') {
-        revertOperations = revertReplace(document, path)
-      } else if (operation.op === 'copy') {
-        revertOperations = revertCopy(document, path)
-      } else if (operation.op === 'move') {
-        revertOperations = revertMove(document, path, parseFrom(operation.from))
-      } else if (operation.op === 'test') {
-        revertOperations = []
-      } else {
-        throw new Error('Unknown JSONPatch operation ' + JSON.stringify(operation))
+  const before: JSONPatchOptions['before'] = <TT, UU>(document: TT, operation: JSONPatchOperation) : { document?: UU, operation?: JSONPatchOperation } => {
+    let revertOperations: JSONPatchDocument
+    const path = parsePath(document, operation.path)
+    if (operation.op === 'add') {
+      revertOperations = revertAdd(document, path)
+    } else if (operation.op === 'remove') {
+      revertOperations = revertRemove(document, path)
+    } else if (operation.op === 'replace') {
+      revertOperations = revertReplace(document, path)
+    } else if (operation.op === 'copy') {
+      revertOperations = revertCopy(document, path)
+    } else if (operation.op === 'move') {
+      revertOperations = revertMove(document, path, parseFrom(operation.from))
+    } else if (operation.op === 'test') {
+      revertOperations = []
+    } else {
+      throw new Error('Unknown JSONPatch operation ' + JSON.stringify(operation))
+    }
+
+    let updatedJson: UU
+    if (options && options.before) {
+      const res = options.before(document, operation, revertOperations)
+      if (res && res.revertOperations) {
+        revertOperations = res.revertOperations
       }
-
-      let updatedJson
-      if (options && options.before) {
-        const res = options.before(document, operation, revertOperations)
-        if (res && res.revertOperations) {
-          revertOperations = res.revertOperations
-        }
-        if (res && res.document) {
-          updatedJson = res.document
-        }
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        if (res && res.json) {
-          // TODO: deprecated since v5.0.0. Cleanup this warning some day
-          throw new Error('Deprecation warning: returned object property ".json" has been renamed to ".document"')
-        }
+      if (res && res.document) {
+        updatedJson = res.document as unknown as UU
       }
-
-      allRevertOperations = revertOperations.concat(allRevertOperations)
-
-      if (updatedJson !== undefined) {
-        return {
-          document: updatedJson
-        }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (res && res.json) {
+        // TODO: deprecated since v5.0.0. Cleanup this warning some day
+        throw new Error('Deprecation warning: returned object property ".json" has been renamed to ".document"')
       }
     }
-  })
+
+    allRevertOperations = revertOperations.concat(allRevertOperations)
+
+    if (updatedJson !== undefined) {
+      return {
+        document: updatedJson
+      }
+    }
+  }
+
+  immutableJSONPatch<U, T>(document, operations, { before })
 
   return allRevertOperations
 }
 
-function revertReplace (document: JSONValue, path: JSONPath) : [JSONPatchReplace] {
+function revertReplace<T> (document: T, path: JSONPath) : [JSONPatchReplace] {
   return [{
     op: 'replace',
     path: compileJSONPointer(path),
@@ -86,7 +85,7 @@ function revertReplace (document: JSONValue, path: JSONPath) : [JSONPatchReplace
   }]
 }
 
-function revertRemove (document: JSONValue, path: JSONPath) : [JSONPatchAdd] {
+function revertRemove<T> (document: T, path: JSONPath) : [JSONPatchAdd] {
   return [{
     op: 'add',
     path: compileJSONPointer(path),
@@ -94,7 +93,7 @@ function revertRemove (document: JSONValue, path: JSONPath) : [JSONPatchAdd] {
   }]
 }
 
-function revertAdd (document: JSONValue, path: JSONPath) : [JSONPatchRemove] | [JSONPatchReplace] {
+function revertAdd<T> (document: T, path: JSONPath) : [JSONPatchRemove] | [JSONPatchReplace] {
   if (isArrayItem(document, path) || !existsIn(document, path)) {
     return [{
       op: 'remove',
@@ -105,11 +104,11 @@ function revertAdd (document: JSONValue, path: JSONPath) : [JSONPatchRemove] | [
   }
 }
 
-function revertCopy (document: JSONValue, path: JSONPath) : [JSONPatchRemove] | [JSONPatchReplace] {
+function revertCopy<T> (document: T, path: JSONPath) : [JSONPatchRemove] | [JSONPatchReplace] {
   return revertAdd(document, path)
 }
 
-function revertMove (document: JSONValue, path: JSONPath, from: JSONPath) : [JSONPatchReplace] | [JSONPatchMove] | [JSONPatchMove, JSONPatchAdd] {
+function revertMove<T> (document: T, path: JSONPath, from: JSONPath) : [JSONPatchReplace] | [JSONPatchMove] | [JSONPatchMove, JSONPatchAdd] {
   if (path.length < from.length && startsWith(from, path)) {
     // replacing the parent with the child
     return [
