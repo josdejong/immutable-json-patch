@@ -38,6 +38,7 @@
     "build:types": "tsc --project tsconfig-types.json",
     "build:test": "mocha test-lib/*.test.*",
     "lint": "eslint src/**/*.ts",
+    "format": "eslint src/**/*.ts --fix",
     "build-and-test": "npm run lint && npm run build",
     "prepublishOnly": "npm run build-and-test"
   },

@@ -2,6 +2,7 @@ import assert from 'assert'
 import { immutableJSONPatch, isArrayItem } from './immutableJSONPatch.js'
 import { revertJSONPatch } from './revertJSONPatch.js'
 import type { JSONPatchDocument } from './types'
+import { expectTypeOf } from 'expect-type'
 
 describe('immutableJSONPatch', () => {
   it('test strictEqual, notStrictEqual, deepStrictEqual', () => {
@@ -479,6 +480,48 @@ describe('immutableJSONPatch', () => {
     assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, [
       { op: 'replace', path: '', value: 3 }
+    ])
+  })
+
+  it('jsonpatch with types', () => {
+    interface UserWithoutId {
+      name: string
+    }
+
+    interface User {
+      id: string
+      name: string
+    }
+
+    const newUser: UserWithoutId = { name: 'Joe' }
+    const operations: JSONPatchDocument = [
+      { op: 'add', path: '/id', value: '1234' }
+    ]
+
+    const user: User = immutableJSONPatch(newUser, operations)
+
+    assert.deepStrictEqual(user, { name: 'Joe', id: '1234' })
+
+    const user2 = immutableJSONPatch<User, UserWithoutId>(newUser, operations, {
+      before: (document: UserWithoutId) => {
+        expectTypeOf(document).toMatchTypeOf<UserWithoutId>()
+        return { document }
+      },
+      after: (document: User) => {
+        expectTypeOf(document).toMatchTypeOf<UserWithoutId>()
+        return { document }
+      }
+    })
+    expectTypeOf(user2).toMatchTypeOf<User>()
+
+    const revert = revertJSONPatch(newUser, operations, {
+      before: (document: UserWithoutId, operation, revertOperations) => {
+        expectTypeOf(document).toMatchTypeOf<UserWithoutId>()
+        return { document, revertOperations }
+      }
+    })
+    assert.deepStrictEqual(revert, [
+      { op: 'remove', path: '/id' }
     ])
   })
 

@@ -20,7 +20,11 @@ import { initial, isEqual, last } from './utils.js'
  * The original JSON object will not be changed,
  * instead, the patch is applied in an immutable way
  */
-export function immutableJSONPatch<T, U> (document: U, operations: JSONPatchDocument, options?:JSONPatchOptions) : T {
+export function immutableJSONPatch<T, U = unknown> (
+  document: U,
+  operations: JSONPatchDocument,
+  options?:JSONPatchOptions
+) : T {
   let updatedDocument = document as unknown as T
 
   for (let i = 0; i < operations.length; i++) {
