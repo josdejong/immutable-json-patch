@@ -68,6 +68,7 @@ describe('typeguards', () => {
 
   it('isJSONObject should return true for plain objects only', () => {
     strictEqual(isJSONObject({}), true)
+    strictEqual(isJSONObject(Object.create(null)), true)
 
     strictEqual(isJSONObject(true), false)
     strictEqual(isJSONObject(123), false)
@@ -85,6 +86,7 @@ describe('typeguards', () => {
     strictEqual(isJSONArray(123), false)
     strictEqual(isJSONArray(new Date()), false)
     strictEqual(isJSONArray({}), false)
+    strictEqual(isJSONArray(Object.create(null)), false)
     strictEqual(isJSONArray(null), false)
     strictEqual(isJSONArray(undefined), false)
     strictEqual(isJSONArray(new CustomClass()), false)

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2024-01-19, version 6.0.1
+
+- Fix `Object.create(null)` not being recognized as object.
+
+
 ## 2023-12-13, version 6.0.0
 
 - BREAKING: deprecated the `JSONValue` type, use generics instead.

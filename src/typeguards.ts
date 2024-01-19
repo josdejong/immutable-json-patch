@@ -16,7 +16,8 @@ export function isJSONObject (value: unknown) : value is Record<string, unknown>
   return (
     value !== null &&
     typeof value === 'object' &&
-    value.constructor === Object // do not match on classes or Array
+    (value.constructor === undefined || // for example Object.create(null)
+    value.constructor.name === 'Object') // do not match on classes or Array
   )
 }
 
