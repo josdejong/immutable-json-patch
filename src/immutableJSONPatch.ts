@@ -85,7 +85,7 @@ export function immutableJSONPatch<T, U = unknown> (
  * Replace an existing item
  */
 export function replace<T, U, V> (document: U, path: JSONPath, value: V) : T {
-  return setIn(document, path, value)
+  return existsIn(document, path) ? setIn(document, path, value) : document as unknown as T
 }
 
 /**
