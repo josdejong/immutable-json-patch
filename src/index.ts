@@ -1,18 +1,16 @@
-export { immutableJSONPatch, parsePath, parseFrom } from './immutableJSONPatch.js'
-export { revertJSONPatch } from './revertJSONPatch.js'
-
-// types
-export * from './types.js'
-
+export {
+  deleteIn,
+  existsIn,
+  getIn,
+  insertAt,
+  setIn,
+  transform,
+  updateIn
+} from './immutabilityHelpers.js'
+export { immutableJSONPatch, parseFrom, parsePath } from './immutableJSONPatch.js'
 // utils
 export * from './jsonPointer.js'
+export { revertJSONPatch } from './revertJSONPatch.js'
 export * from './typeguards.js'
-export {
-  getIn,
-  setIn,
-  existsIn,
-  insertAt,
-  deleteIn,
-  updateIn,
-  transform
-} from './immutabilityHelpers.js'
+// types
+export * from './types.js'

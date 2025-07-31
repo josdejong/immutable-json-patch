@@ -2,7 +2,7 @@
  * Test deep equality of two JSON values, objects, or arrays
  */
 // TODO: write unit tests
-export function isEqual<T, U> (a: T, b: U) : boolean {
+export function isEqual<T, U>(a: T, b: U): boolean {
   // FIXME: this function will return false for two objects with the same keys
   //  but different order of keys
   return JSON.stringify(a) === JSON.stringify(b)
@@ -11,7 +11,7 @@ export function isEqual<T, U> (a: T, b: U) : boolean {
 /**
  * Test whether two values are strictly equal
  */
-export function strictEqual (a: unknown, b: unknown) : boolean {
+export function strictEqual(a: unknown, b: unknown): boolean {
   return a === b
 }
 
@@ -19,7 +19,7 @@ export function strictEqual (a: unknown, b: unknown) : boolean {
  * Get all but the last items from an array
  */
 // TODO: write unit tests
-export function initial<T> (array: Array<T>) : Array<T> {
+export function initial<T>(array: Array<T>): Array<T> {
   return array.slice(0, array.length - 1)
 }
 
@@ -27,7 +27,7 @@ export function initial<T> (array: Array<T>) : Array<T> {
  * Get the last item from an array
  */
 // TODO: write unit tests
-export function last<T> (array: Array<T>) : T | undefined {
+export function last<T>(array: Array<T>): T | undefined {
   return array[array.length - 1]
 }
 
@@ -37,7 +37,7 @@ export function last<T> (array: Array<T>) : T | undefined {
  * @param array2
  * @param [isEqual] Optional function to check equality
  */
-export function startsWith<T> (array1: Array<T>, array2: Array<T>, isEqual = strictEqual) : boolean {
+export function startsWith<T>(array1: Array<T>, array2: Array<T>, isEqual = strictEqual): boolean {
   if (array1.length < array2.length) {
     return false
   }
@@ -55,6 +55,6 @@ export function startsWith<T> (array1: Array<T>, array2: Array<T>, isEqual = str
  * Test whether a value is an Object or an Array (and not a primitive JSON value)
  */
 // TODO: write unit tests
-export function isObjectOrArray (value: unknown) : boolean {
+export function isObjectOrArray(value: unknown): boolean {
   return typeof value === 'object' && value !== null
 }

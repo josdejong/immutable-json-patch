@@ -181,7 +181,7 @@ To run the unit tests:
 $ npm test
 ```
 
-To run the linter (eslint):
+To run the linter (biomejs):
 
 ```
 $ npm run lint

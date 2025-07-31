@@ -1,15 +1,12 @@
 import { existsIn, getIn } from './immutabilityHelpers.js'
-import {
-  immutableJSONPatch,
-  isArrayItem,
-  parseFrom,
-  parsePath
-} from './immutableJSONPatch.js'
+import { immutableJSONPatch, isArrayItem, parseFrom, parsePath } from './immutableJSONPatch.js'
 import { compileJSONPointer } from './jsonPointer.js'
-import {
+import type {
   JSONPatchAdd,
   JSONPatchDocument,
-  JSONPatchMove, JSONPatchOperation, JSONPatchOptions,
+  JSONPatchMove,
+  JSONPatchOperation,
+  JSONPatchOptions,
   JSONPatchRemove,
   JSONPatchReplace,
   JSONPath,
@@ -24,10 +21,17 @@ import { startsWith } from './utils.js'
  * @param [options]
  * @return Returns the operations to revert the changes
  */
-export function revertJSONPatch<T, U> (document: T, operations: JSONPatchDocument, options?: RevertJSONPatchOptions) : JSONPatchDocument {
+export function revertJSONPatch<T, U>(
+  document: T,
+  operations: JSONPatchDocument,
+  options?: RevertJSONPatchOptions
+): JSONPatchDocument {
   let allRevertOperations: JSONPatchDocument = []
 
-  const before: JSONPatchOptions['before'] = <TT, UU>(document: TT, operation: JSONPatchOperation) : { document?: UU, operation?: JSONPatchOperation } => {
+  const before: JSONPatchOptions['before'] = <TT, UU>(
+    document: TT,
+    operation: JSONPatchOperation
+  ): { document?: UU; operation?: JSONPatchOperation } => {
     let revertOperations: JSONPatchDocument
     const path = parsePath(document, operation.path)
     if (operation.op === 'add') {
@@ -43,23 +47,25 @@ export function revertJSONPatch<T, U> (document: T, operations: JSONPatchDocumen
     } else if (operation.op === 'test') {
       revertOperations = []
     } else {
-      throw new Error('Unknown JSONPatch operation ' + JSON.stringify(operation))
+      throw new Error(`Unknown JSONPatch operation ${JSON.stringify(operation)}`)
     }
 
     let updatedJson: UU
-    if (options && options.before) {
+    if (options?.before) {
       const res = options.before(document, operation, revertOperations)
-      if (res && res.revertOperations) {
+      if (res?.revertOperations) {
         revertOperations = res.revertOperations
       }
-      if (res && res.document) {
+      if (res?.document) {
         updatedJson = res.document as unknown as UU
       }
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+
       // @ts-ignore
-      if (res && res.json) {
+      if (res?.json) {
         // TODO: deprecated since v5.0.0. Cleanup this warning some day
-        throw new Error('Deprecation warning: returned object property ".json" has been renamed to ".document"')
+        throw new Error(
+          'Deprecation warning: returned object property ".json" has been renamed to ".document"'
+        )
       }
     }
 
@@ -77,40 +83,49 @@ export function revertJSONPatch<T, U> (document: T, operations: JSONPatchDocumen
   return allRevertOperations
 }
 
-function revertReplace<T> (document: T, path: JSONPath) : [JSONPatchReplace] | [] {
+function revertReplace<T>(document: T, path: JSONPath): [JSONPatchReplace] | [] {
   return existsIn(document, path)
-    ? [{
-        op: 'replace',
-        path: compileJSONPointer(path),
-        value: getIn(document, path)
-      }]
+    ? [
+        {
+          op: 'replace',
+          path: compileJSONPointer(path),
+          value: getIn(document, path)
+        }
+      ]
     : []
 }
 
-function revertRemove<T> (document: T, path: JSONPath) : [JSONPatchAdd] {
-  return [{
-    op: 'add',
-    path: compileJSONPointer(path),
-    value: getIn(document, path)
-  }]
+function revertRemove<T>(document: T, path: JSONPath): [JSONPatchAdd] {
+  return [
+    {
+      op: 'add',
+      path: compileJSONPointer(path),
+      value: getIn(document, path)
+    }
+  ]
 }
 
-function revertAdd<T> (document: T, path: JSONPath) : [JSONPatchRemove] | [JSONPatchReplace] | [] {
+function revertAdd<T>(document: T, path: JSONPath): [JSONPatchRemove] | [JSONPatchReplace] | [] {
   if (isArrayItem(document, path) || !existsIn(document, path)) {
-    return [{
-      op: 'remove',
-      path: compileJSONPointer(path)
-    }]
-  } else {
-    return revertReplace(document, path)
+    return [
+      {
+        op: 'remove',
+        path: compileJSONPointer(path)
+      }
+    ]
   }
+  return revertReplace(document, path)
 }
 
-function revertCopy<T> (document: T, path: JSONPath) : [JSONPatchRemove] | [JSONPatchReplace] | [] {
+function revertCopy<T>(document: T, path: JSONPath): [JSONPatchRemove] | [JSONPatchReplace] | [] {
   return revertAdd(document, path)
 }
 
-function revertMove<T> (document: T, path: JSONPath, from: JSONPath) : [JSONPatchReplace] | [JSONPatchMove] | [JSONPatchMove, JSONPatchAdd] {
+function revertMove<T>(
+  document: T,
+  path: JSONPath,
+  from: JSONPath
+): [JSONPatchReplace] | [JSONPatchMove] | [JSONPatchMove, JSONPatchAdd] {
   if (path.length < from.length && startsWith(from, path)) {
     // replacing the parent with the child
     return [
@@ -130,13 +145,7 @@ function revertMove<T> (document: T, path: JSONPath, from: JSONPath) : [JSONPatc
 
   if (!isArrayItem(document, path) && existsIn(document, path)) {
     // the move replaces an existing value in an object
-    return [
-      move,
-      ...revertRemove(document, path)
-    ]
-  } else {
-    return [
-      move
-    ]
+    return [move, ...revertRemove(document, path)]
   }
+  return [move]
 }

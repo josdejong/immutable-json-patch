@@ -1,4 +1,4 @@
-import { strictEqual } from 'assert'
+import { strictEqual } from 'node:assert'
 import {
   isJSONArray,
   isJSONObject,
@@ -20,16 +20,106 @@ describe('typeguards', () => {
   const testOperation = { op: 'test', path: '/array/2', value: 42 }
 
   const tests = [
-    { value: addOperation, operation: true, add: true, remove: false, replace: false, copy: false, move: false, test: false },
-    { value: removeOperation, operation: true, add: false, remove: true, replace: false, copy: false, move: false, test: false },
-    { value: replaceOperation, operation: true, add: false, remove: false, replace: true, copy: false, move: false, test: false },
-    { value: copyOperation, operation: true, add: false, remove: false, replace: false, copy: true, move: false, test: false },
-    { value: moveOperation, operation: true, add: false, remove: false, replace: false, copy: false, move: true, test: false },
-    { value: testOperation, operation: true, add: false, remove: false, replace: false, copy: false, move: false, test: true },
-    { value: undefined, operation: false, add: false, remove: false, replace: false, copy: false, move: false, test: false },
-    { value: null, operation: false, add: false, remove: false, replace: false, copy: false, move: false, test: false },
-    { value: {}, operation: false, add: false, remove: false, replace: false, copy: false, move: false, test: false },
-    { value: 42, operation: false, add: false, remove: false, replace: false, copy: false, move: false, test: false }
+    {
+      value: addOperation,
+      operation: true,
+      add: true,
+      remove: false,
+      replace: false,
+      copy: false,
+      move: false,
+      test: false
+    },
+    {
+      value: removeOperation,
+      operation: true,
+      add: false,
+      remove: true,
+      replace: false,
+      copy: false,
+      move: false,
+      test: false
+    },
+    {
+      value: replaceOperation,
+      operation: true,
+      add: false,
+      remove: false,
+      replace: true,
+      copy: false,
+      move: false,
+      test: false
+    },
+    {
+      value: copyOperation,
+      operation: true,
+      add: false,
+      remove: false,
+      replace: false,
+      copy: true,
+      move: false,
+      test: false
+    },
+    {
+      value: moveOperation,
+      operation: true,
+      add: false,
+      remove: false,
+      replace: false,
+      copy: false,
+      move: true,
+      test: false
+    },
+    {
+      value: testOperation,
+      operation: true,
+      add: false,
+      remove: false,
+      replace: false,
+      copy: false,
+      move: false,
+      test: true
+    },
+    {
+      value: undefined,
+      operation: false,
+      add: false,
+      remove: false,
+      replace: false,
+      copy: false,
+      move: false,
+      test: false
+    },
+    {
+      value: null,
+      operation: false,
+      add: false,
+      remove: false,
+      replace: false,
+      copy: false,
+      move: false,
+      test: false
+    },
+    {
+      value: {},
+      operation: false,
+      add: false,
+      remove: false,
+      replace: false,
+      copy: false,
+      move: false,
+      test: false
+    },
+    {
+      value: 42,
+      operation: false,
+      add: false,
+      remove: false,
+      replace: false,
+      copy: false,
+      move: false,
+      test: false
+    }
   ]
 
   tests.forEach(({ value, operation, add, remove, replace, copy, move, test }) => {

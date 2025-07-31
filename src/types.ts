@@ -47,16 +47,20 @@ export type JSONPatchOperation =
 export type JSONPatchDocument = JSONPatchOperation[]
 
 export type JSONPatchOptions<T = unknown, U = unknown, V = unknown, W = unknown, X = unknown> = {
-  before?: (document: T, operation: JSONPatchOperation)
-    => { document?: U, operation?: JSONPatchOperation }
+  before?: (
+    document: T,
+    operation: JSONPatchOperation
+  ) => { document?: U; operation?: JSONPatchOperation }
 
-  after?: (document: V, operation: JSONPatchOperation, previousDocument: W)
-    => X
+  after?: (document: V, operation: JSONPatchOperation, previousDocument: W) => X
 }
 
 export type RevertJSONPatchOptions<T = unknown, U = unknown> = {
-  before?: (document: T, operation: JSONPatchOperation, revertOperations: JSONPatchOperation[])
-    => { document?: U, revertOperations?: JSONPatchOperation[] }
+  before?: (
+    document: T,
+    operation: JSONPatchOperation,
+    revertOperations: JSONPatchOperation[]
+  ) => { document?: U; revertOperations?: JSONPatchOperation[] }
 }
 
 /**

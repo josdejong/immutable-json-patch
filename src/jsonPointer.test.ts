@@ -1,9 +1,10 @@
-import assert from 'assert'
+import assert from 'node:assert'
 import {
   appendToJSONPointer,
   compileJSONPointer,
   compileJSONPointerProp,
-  parseJSONPointer, startsWithJSONPointer
+  parseJSONPointer,
+  startsWithJSONPointer
 } from './jsonPointer.js'
 
 describe('jsonPointer', () => {

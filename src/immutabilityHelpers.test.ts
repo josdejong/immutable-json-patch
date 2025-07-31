@@ -1,4 +1,5 @@
-import assert from 'assert'
+import assert from 'node:assert'
+import { expectTypeOf } from 'expect-type'
 import {
   deleteIn,
   existsIn,
@@ -8,7 +9,6 @@ import {
   transform,
   updateIn
 } from './immutabilityHelpers.js'
-import { expectTypeOf } from 'expect-type'
 
 describe('immutabilityHelpers', () => {
   it('getIn', () => {
@@ -100,7 +100,7 @@ describe('immutabilityHelpers', () => {
       a: []
     }
 
-    expected.a[2] = ({ c: 4 })
+    expected.a[2] = { c: 4 }
 
     assert.deepStrictEqual(setIn(obj, ['a', '2', 'c'], 4, true), expected)
     assert.deepStrictEqual(obj, {})
@@ -172,9 +172,9 @@ describe('immutabilityHelpers', () => {
     const newUser: UserWithoutId = { name: 'Joe' }
     const user: User = setIn(newUser, ['id'], '1234')
     assert.deepStrictEqual(user, { name: 'Joe', id: '1234' })
-    expectTypeOf(setIn<User>(newUser, ['id'], '1234')).toMatchTypeOf<User>()
-    expectTypeOf(setIn<User, UserWithoutId>(newUser, ['id'], '1234')).toMatchTypeOf<User>()
-    expectTypeOf(setIn<User, UserWithoutId, string>(newUser, ['id'], '1234')).toMatchTypeOf<User>()
+    expectTypeOf(setIn<User>(newUser, ['id'], '1234')).toExtend<User>()
+    expectTypeOf(setIn<User, UserWithoutId>(newUser, ['id'], '1234')).toExtend<User>()
+    expectTypeOf(setIn<User, UserWithoutId, string>(newUser, ['id'], '1234')).toExtend<User>()
   })
 
   it('updateIn', () => {
@@ -239,7 +239,7 @@ describe('immutabilityHelpers', () => {
       d: 3
     }
 
-    const updated = updateIn(obj, ['a', 'e'], (value) => 'foo-' + value)
+    const updated = updateIn(obj, ['a', 'e'], (value) => `foo-${value}`)
     assert.deepStrictEqual(updated, {
       a: {
         b: {
@@ -340,14 +340,12 @@ describe('immutabilityHelpers', () => {
   it('insertAt should copy symbols', () => {
     const symbol = Symbol('test symbol')
     const obj = { a: [1, 2, 3] }
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     obj.a[symbol] = 'test'
 
     const updated = insertAt(obj, ['a', '2'], 8)
 
     const expected = { a: [1, 2, 8, 3] }
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     expected.a[symbol] = 'test'
     assert.deepStrictEqual(updated, expected)
@@ -362,8 +360,7 @@ describe('immutabilityHelpers', () => {
   it('transform (change based on value)', () => {
     const document = { a: [1, 2, 3], b: { c: 4 } }
 
-    const updated = transform(document,
-      (value) => value === 2 ? 20 : value)
+    const updated = transform(document, (value) => (value === 2 ? 20 : value))
     const expected = { a: [1, 20, 3], b: { c: 4 } }
 
     assert.deepStrictEqual(updated, expected)
@@ -373,8 +370,7 @@ describe('immutabilityHelpers', () => {
   it('transform (change based on path)', () => {
     const document = { a: [1, 2, 3], b: { c: 4 } }
 
-    const updated = transform(document,
-      (value, path) => path.join('.') === 'a.1' ? 20 : value)
+    const updated = transform(document, (value, path) => (path.join('.') === 'a.1' ? 20 : value))
     const expected = { a: [1, 20, 3], b: { c: 4 } }
 
     assert.deepStrictEqual(updated, expected)
@@ -387,7 +383,6 @@ describe('immutabilityHelpers', () => {
         arr: [1, 2, { first: 3, last: 4 }]
       },
       str: 'hello world',
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       nothing: null,
       bool: false
@@ -410,23 +405,18 @@ describe('immutabilityHelpers', () => {
     const symbol = Symbol('mySymbol')
 
     const arrWithSymbol = [1, 2, 3]
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     arrWithSymbol[symbol] = 'yes'
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     assert.deepStrictEqual(existsIn(arrWithSymbol, [symbol]), true)
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     assert.deepStrictEqual(existsIn([1, 2, 3], [symbol]), false)
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     assert.deepStrictEqual(existsIn({ a: 1, [symbol]: 2 }, [symbol]), true)
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     assert.deepStrictEqual(existsIn({ a: 1 }, [symbol]), false)
   })
