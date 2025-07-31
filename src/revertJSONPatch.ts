@@ -77,12 +77,14 @@ export function revertJSONPatch<T, U> (document: T, operations: JSONPatchDocumen
   return allRevertOperations
 }
 
-function revertReplace<T> (document: T, path: JSONPath) : [JSONPatchReplace] {
-  return [{
-    op: 'replace',
-    path: compileJSONPointer(path),
-    value: getIn(document, path)
-  }]
+function revertReplace<T> (document: T, path: JSONPath) : [JSONPatchReplace] | [] {
+  return existsIn(document, path)
+    ? [{
+        op: 'replace',
+        path: compileJSONPointer(path),
+        value: getIn(document, path)
+      }]
+    : []
 }
 
 function revertRemove<T> (document: T, path: JSONPath) : [JSONPatchAdd] {
@@ -93,7 +95,7 @@ function revertRemove<T> (document: T, path: JSONPath) : [JSONPatchAdd] {
   }]
 }
 
-function revertAdd<T> (document: T, path: JSONPath) : [JSONPatchRemove] | [JSONPatchReplace] {
+function revertAdd<T> (document: T, path: JSONPath) : [JSONPatchRemove] | [JSONPatchReplace] | [] {
   if (isArrayItem(document, path) || !existsIn(document, path)) {
     return [{
       op: 'remove',
@@ -104,7 +106,7 @@ function revertAdd<T> (document: T, path: JSONPath) : [JSONPatchRemove] | [JSONP
   }
 }
 
-function revertCopy<T> (document: T, path: JSONPath) : [JSONPatchRemove] | [JSONPatchReplace] {
+function revertCopy<T> (document: T, path: JSONPath) : [JSONPatchRemove] | [JSONPatchReplace] | [] {
   return revertAdd(document, path)
 }
 

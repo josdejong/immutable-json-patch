@@ -227,6 +227,23 @@ describe('immutableJSONPatch', () => {
     assert.deepStrictEqual(updatedDocument, { b: 3 })
   })
 
+  it('jsonpatch replace a non existing path', () => {
+    const document = { a: 2 }
+    const operations: JSONPatchDocument = [
+      { op: 'replace', path: '/foo', value: '3' }
+    ]
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
+    assert.deepStrictEqual(updatedDocument, { a: 2 })
+    assert.deepStrictEqual(revert, [])
+
+    // test revert
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    const revert2 = revertJSONPatch(updatedDocument, revert)
+    assert.deepStrictEqual(updatedJson2, document)
+    assert.deepStrictEqual(revert2, [])
+  })
+
   it('jsonpatch copy', () => {
     const document = {
       arr: [1, 2, 3],
