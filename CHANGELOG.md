@@ -1,5 +1,10 @@
 # Changelog
 
+## 2025-07-31, version 6.0.2
+
+- Fix: #4 must ignore a "replace" operation when the path does not exist.
+
+
 ## 2024-01-19, version 6.0.1
 
 - Fix `Object.create(null)` not being recognized as object.
