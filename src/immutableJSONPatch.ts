@@ -6,7 +6,7 @@ import type {
   JSONPatchOptions,
   JSONPath,
   JSONPointer
-} from './types'
+} from './types.js'
 import { initial, isEqual, last } from './utils.js'
 
 /**

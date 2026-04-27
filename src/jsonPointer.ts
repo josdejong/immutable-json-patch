@@ -1,4 +1,4 @@
-import type { JSONPath, JSONPointer } from './types'
+import type { JSONPath, JSONPointer } from './types.js'
 
 /**
  * Parse a JSON Pointer

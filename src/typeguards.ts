@@ -6,7 +6,7 @@ import type {
   JSONPatchRemove,
   JSONPatchReplace,
   JSONPatchTest
-} from './types'
+} from './types.js'
 
 export function isJSONArray(value: unknown): value is Array<unknown> {
   return Array.isArray(value)

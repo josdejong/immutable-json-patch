@@ -9,7 +9,7 @@
  * https://github.com/mariocasciaro/object-path-immutable
  */
 import { isJSONArray, isJSONObject } from './typeguards.js'
-import type { JSONPath } from './types'
+import type { JSONPath } from './types.js'
 import { isObjectOrArray } from './utils.js'
 
 /**
