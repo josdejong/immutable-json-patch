@@ -50,7 +50,7 @@ export function revertJSONPatch<T, U>(
       throw new Error(`Unknown JSONPatch operation ${JSON.stringify(operation)}`)
     }
 
-    let updatedJson: UU
+    let updatedJson: UU | undefined
     if (options?.before) {
       const res = options.before(document, operation, revertOperations)
       if (res?.revertOperations) {
@@ -60,7 +60,7 @@ export function revertJSONPatch<T, U>(
         updatedJson = res.document as unknown as UU
       }
 
-      // @ts-ignore
+      // @ts-expect-error
       if (res?.json) {
         // TODO: deprecated since v5.0.0. Cleanup this warning some day
         throw new Error(
@@ -71,11 +71,7 @@ export function revertJSONPatch<T, U>(
 
     allRevertOperations = revertOperations.concat(allRevertOperations)
 
-    if (updatedJson !== undefined) {
-      return {
-        document: updatedJson
-      }
-    }
+    return updatedJson !== undefined ? { document: updatedJson } : {}
   }
 
   immutableJSONPatch<U, T>(document, operations, { before })

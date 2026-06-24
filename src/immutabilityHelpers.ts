@@ -23,7 +23,7 @@ export function shallowClone<T>(value: T): T {
 
     // copy all symbols
     Object.getOwnPropertySymbols(value).forEach((symbol) => {
-      // @ts-ignore
+      // @ts-expect-error
       copy[symbol] = value[symbol]
     })
 
@@ -36,7 +36,7 @@ export function shallowClone<T>(value: T): T {
 
     // copy all symbols
     Object.getOwnPropertySymbols(value).forEach((symbol) => {
-      // @ts-ignore
+      // @ts-expect-error
       copy[symbol] = value[symbol]
     })
 
@@ -51,14 +51,14 @@ export function shallowClone<T>(value: T): T {
  * If the value is unchanged, the original object will be returned
  */
 export function applyProp<T, U = unknown>(object: T, key: string | number, value: U): T {
-  // @ts-ignore
+  // @ts-expect-error
   if (object[key] === value) {
     // return original object unchanged when the new value is identical to the old one
     return object
   }
 
   const updatedObject = shallowClone(object)
-  // @ts-ignore
+  // @ts-expect-error
   updatedObject[key] = value
   return updatedObject
 }
@@ -76,7 +76,7 @@ export function getIn<T, U = unknown>(object: U, path: JSONPath): T | undefined 
     if (isJSONObject(value)) {
       value = value[path[i]] as T
     } else if (isJSONArray(value)) {
-      value = value[Number.parseInt(path[i])] as T
+      value = value[Number.parseInt(path[i], 10)] as T
     } else {
       value = undefined
     }
@@ -114,7 +114,7 @@ export function setIn<T, U = unknown, V = unknown>(
   }
 
   const key = path[0]
-  // @ts-ignore
+  // @ts-expect-error
   const updatedValue = setIn(object ? object[key] : undefined, path.slice(1), value, createPath)
 
   if (isJSONObject(object) || isJSONArray(object)) {
@@ -123,7 +123,7 @@ export function setIn<T, U = unknown, V = unknown>(
 
   if (createPath) {
     const newObject = IS_INTEGER_REGEX.test(key) ? [] : {}
-    // @ts-ignore
+    // @ts-expect-error
     newObject[key] = updatedValue
     return newObject as T
   }
@@ -153,9 +153,9 @@ export function updateIn<T, U = unknown, V = unknown>(
   }
 
   const key = path[0]
-  // @ts-ignore
+  // @ts-expect-error
   const updatedValue = updateIn(object[key], path.slice(1), transform)
-  // @ts-ignore
+
   return applyProp(object, key, updatedValue)
 }
 
@@ -183,7 +183,7 @@ export function deleteIn<T, U = unknown>(object: U, path: JSONPath): T {
     const updatedObject = shallowClone(object)
 
     if (isJSONArray(updatedObject)) {
-      updatedObject.splice(Number.parseInt(key), 1)
+      updatedObject.splice(Number.parseInt(key, 10), 1)
     }
 
     if (isJSONObject(updatedObject)) {
@@ -194,9 +194,9 @@ export function deleteIn<T, U = unknown>(object: U, path: JSONPath): T {
   }
 
   const key = path[0]
-  // @ts-ignore
+  // @ts-expect-error
   const updatedValue = deleteIn(object[key], path.slice(1))
-  // @ts-ignore
+  // @ts-expect-error
   return applyProp(object, key, updatedValue)
 }
 
@@ -216,7 +216,7 @@ export function insertAt<T, U = unknown>(document: T, path: JSONPath, value: U):
     }
 
     const updatedItems = shallowClone(items)
-    updatedItems.splice(Number.parseInt(index), 0, value)
+    updatedItems.splice(Number.parseInt(index, 10), 0, value)
 
     return updatedItems
   })
@@ -293,6 +293,6 @@ export function existsIn<T>(document: T, path: JSONPath): boolean {
     return false
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   return existsIn(document[path[0]], path.slice(1))
 }

@@ -131,7 +131,7 @@ describe('immutableJSONPatch', () => {
 
     assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, operations)
-    // @ts-ignore
+    // @ts-expect-error
     assert.strictEqual(updatedDocument.unchanged, document.unchanged)
   })
 
@@ -160,7 +160,7 @@ describe('immutableJSONPatch', () => {
 
     assert.deepStrictEqual(updatedJson2, document)
     assert.deepStrictEqual(revert2, operations)
-    // @ts-ignore
+    // @ts-expect-error
     assert.strictEqual(updatedDocument.unchanged, document.unchanged)
   })
 

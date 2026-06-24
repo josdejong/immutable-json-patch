@@ -34,7 +34,7 @@ export function immutableJSONPatch<T, U = unknown>(
           updatedDocument = result.document as T
         }
 
-        // @ts-ignore
+        // @ts-expect-error
         if (result.json !== undefined) {
           // TODO: deprecated since v5.0.0. Cleanup this warning some day
           throw new Error(
@@ -168,7 +168,7 @@ export function resolvePathIndex<T>(document: T, path: JSONPath): JSONPath {
   const parentPath = initial(path)
   const parent = getIn(document, parentPath)
 
-  // @ts-ignore
+  // @ts-expect-error
   return parentPath.concat(parent.length)
 }
 

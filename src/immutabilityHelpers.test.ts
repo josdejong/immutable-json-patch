@@ -340,13 +340,13 @@ describe('immutabilityHelpers', () => {
   it('insertAt should copy symbols', () => {
     const symbol = Symbol('test symbol')
     const obj = { a: [1, 2, 3] }
-    // @ts-ignore
+    // @ts-expect-error
     obj.a[symbol] = 'test'
 
     const updated = insertAt(obj, ['a', '2'], 8)
 
     const expected = { a: [1, 2, 8, 3] }
-    // @ts-ignore
+    // @ts-expect-error
     expected.a[symbol] = 'test'
     assert.deepStrictEqual(updated, expected)
   })
@@ -383,7 +383,7 @@ describe('immutabilityHelpers', () => {
         arr: [1, 2, { first: 3, last: 4 }]
       },
       str: 'hello world',
-      // @ts-ignore
+      // @ts-expect-error
       nothing: null,
       bool: false
     }
@@ -405,19 +405,19 @@ describe('immutabilityHelpers', () => {
     const symbol = Symbol('mySymbol')
 
     const arrWithSymbol = [1, 2, 3]
-    // @ts-ignore
+    // @ts-expect-error
     arrWithSymbol[symbol] = 'yes'
 
-    // @ts-ignore
+    // @ts-expect-error
     assert.deepStrictEqual(existsIn(arrWithSymbol, [symbol]), true)
 
-    // @ts-ignore
+    // @ts-expect-error
     assert.deepStrictEqual(existsIn([1, 2, 3], [symbol]), false)
 
-    // @ts-ignore
+    // @ts-expect-error
     assert.deepStrictEqual(existsIn({ a: 1, [symbol]: 2 }, [symbol]), true)
 
-    // @ts-ignore
+    // @ts-expect-error
     assert.deepStrictEqual(existsIn({ a: 1 }, [symbol]), false)
   })
 })

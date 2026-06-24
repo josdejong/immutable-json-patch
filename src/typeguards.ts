@@ -22,36 +22,36 @@ export function isJSONObject(value: unknown): value is Record<string, unknown> {
 }
 
 export function isJSONPatchOperation(value: unknown): value is JSONPatchOperation {
-  // @ts-ignore
+  // @ts-expect-error
   return value && typeof value === 'object' ? typeof value.op === 'string' : false
 }
 
 export function isJSONPatchAdd(value: unknown): value is JSONPatchAdd {
-  // @ts-ignore
+  // @ts-expect-error
   return value && typeof value === 'object' ? value.op === 'add' : false
 }
 
 export function isJSONPatchRemove(value: unknown): value is JSONPatchRemove {
-  // @ts-ignore
+  // @ts-expect-error
   return value && typeof value === 'object' ? value.op === 'remove' : false
 }
 
 export function isJSONPatchReplace(value: unknown): value is JSONPatchReplace {
-  // @ts-ignore
+  // @ts-expect-error
   return value && typeof value === 'object' ? value.op === 'replace' : false
 }
 
 export function isJSONPatchCopy(value: unknown): value is JSONPatchCopy {
-  // @ts-ignore
+  // @ts-expect-error
   return value && typeof value === 'object' ? value.op === 'copy' : false
 }
 
 export function isJSONPatchMove(value: unknown): value is JSONPatchMove {
-  // @ts-ignore
+  // @ts-expect-error
   return value && typeof value === 'object' ? value.op === 'move' : false
 }
 
 export function isJSONPatchTest(value: unknown): value is JSONPatchTest {
-  // @ts-ignore
+  // @ts-expect-error
   return value && typeof value === 'object' ? value.op === 'test' : false
 }
