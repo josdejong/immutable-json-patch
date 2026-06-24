@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-06-24, version 6.0.3
+
+- Fix: TypeScript 6 errors on type imports missing a file extension. 
+  Thanks @realistschuckle.
+
+
 ## 2025-07-31, version 6.0.2
 
 - Fix: #4 must ignore a "replace" operation when the path does not exist.
