@@ -1,6 +1,12 @@
-import { existsIn, getIn } from './immutabilityHelpers.js'
-import { immutableJSONPatch, isArrayItem, parseFrom, parsePath } from './immutableJSONPatch.js'
-import { compileJSONPointer } from './jsonPointer.js'
+import { deleteIn, existsIn, getIn } from './immutabilityHelpers.js'
+import {
+  immutableJSONPatch,
+  isArrayItem,
+  parseFrom,
+  parsePath,
+  resolvePathIndex
+} from './immutableJSONPatch.js'
+import { compileJSONPointer, parseJSONPointer } from './jsonPointer.js'
 import type {
   JSONPatchAdd,
   JSONPatchDocument,
@@ -43,7 +49,11 @@ export function revertJSONPatch<T, U>(
     } else if (operation.op === 'copy') {
       revertOperations = revertCopy(document, path)
     } else if (operation.op === 'move') {
-      revertOperations = revertMove(document, path, parseFrom(operation.from))
+      const from = parseFrom(operation.from)
+      // The value is removed from "from" before it is added at "path", so a "-" index
+      // must be resolved against the document without the moved value
+      const movePath = resolvePathIndex(deleteIn(document, from), parseJSONPointer(operation.path))
+      revertOperations = revertMove(document, movePath, from)
     } else if (operation.op === 'test') {
       revertOperations = []
     } else {
