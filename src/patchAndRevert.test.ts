@@ -341,6 +341,54 @@ describe('immutableJSONPatch', () => {
     assert.deepStrictEqual(revert2, operations)
   })
 
+  it('jsonpatch move to the end of the same array', () => {
+    const document = [1, 2, 3]
+
+    const operations: JSONPatchDocument = [{ op: 'move', from: '/0', path: '/-' }]
+
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
+
+    assert.deepStrictEqual(updatedDocument, [2, 3, 1])
+    assert.deepStrictEqual(revert, [{ op: 'move', from: '/2', path: '/0' }])
+
+    // test revert
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    assert.deepStrictEqual(updatedJson2, document)
+  })
+
+  it('jsonpatch move to the end of the same nested array', () => {
+    const document = { arr: ['A', 'B', 'C'] }
+
+    const operations: JSONPatchDocument = [{ op: 'move', from: '/arr/1', path: '/arr/-' }]
+
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
+
+    assert.deepStrictEqual(updatedDocument, { arr: ['A', 'C', 'B'] })
+    assert.deepStrictEqual(revert, [{ op: 'move', from: '/arr/2', path: '/arr/1' }])
+
+    // test revert
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    assert.deepStrictEqual(updatedJson2, document)
+  })
+
+  it('jsonpatch move to the end of another array', () => {
+    const document = { a: [1, 2], b: [3] }
+
+    const operations: JSONPatchDocument = [{ op: 'move', from: '/a/0', path: '/b/-' }]
+
+    const updatedDocument = immutableJSONPatch(document, operations)
+    const revert = revertJSONPatch(document, operations)
+
+    assert.deepStrictEqual(updatedDocument, { a: [2], b: [3, 1] })
+    assert.deepStrictEqual(revert, [{ op: 'move', from: '/b/1', path: '/a/0' }])
+
+    // test revert
+    const updatedJson2 = immutableJSONPatch(updatedDocument, revert)
+    assert.deepStrictEqual(updatedJson2, document)
+  })
+
   it('jsonpatch move and replace', () => {
     const document = { a: 2, b: 3 }
 
